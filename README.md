@@ -1,0 +1,1 @@
+### QueryDSL Cuba AppComponent
