@@ -11,7 +11,6 @@
           <entry name="$MAVEN_REPOSITORY$/org/antlr/antlr-runtime/3.5.2/antlr-runtime-3.5.2.jar" />
           <entry name="$MAVEN_REPOSITORY$/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.querydsl/querydsl-core/4.1.4/5a5c4064169db7d56f63edd81f64de00d3add197/querydsl-core-4.1.4.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/mindrot/jbcrypt/0.4/jbcrypt-0.4.jar" />
           <entry name="$MAVEN_REPOSITORY$/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar" />
           <entry name="$MAVEN_REPOSITORY$/javax/jdo/jdo-api/3.0.1/jdo-api-3.0.1.jar" />
           <entry name="$MAVEN_REPOSITORY$/xml-apis/xml-apis/1.4.01/xml-apis-1.4.01.jar" />
@@ -34,9 +33,11 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-text/1.8/879a6bde4c0537a25504c72ec7a94ba4099f469c/commons-text-1.8.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-web/5.2.3.RELEASE/dd386a02e40b915ab400a3bf9f586d2dc4c0852c/spring-web-5.2.3.RELEASE.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/glassfish/javax.el/3.0.1-b10/javax.el-3.0.1-b10.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.querydsl/querydsl-apt/4.1.4/51e33839a6b124d975bb0e7f909652024eed9f3a/querydsl-apt-4.1.4.jar" />
           <entry name="$MAVEN_REPOSITORY$/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-pool2/2.7.0/7f9ccfaaf76b0ba8b4200480971a170364a9c361/commons-pool2-2.7.0.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.haulmont.cuba/cuba-global/7.2-SNAPSHOT/8853b0eebef1488fe75303c83ab8631c61099257/cuba-global-7.2-SNAPSHOT.jar" />
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-sql/2.5.8/48e34af5918320894d1aad7d781ae44f8f12c669/groovy-sql-2.5.8.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.querydsl/querydsl-codegen/4.1.4/e67a1c8822a501bfeb174922246e430a7ccd6780/querydsl-codegen-4.1.4.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/eclipse/persistence/org.eclipse.persistence.core/2.7.3-6-cuba/org.eclipse.persistence.core-2.7.3-6-cuba.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-expression/5.2.3.RELEASE/d0c6bb10758805b2153c589686b8045554bfac2d/spring-expression-5.2.3.RELEASE.jar" />
@@ -47,7 +48,7 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-context/5.2.3.RELEASE/7750c95c96c7a1885c8b1b503ba915bc33ca579a/spring-context-5.2.3.RELEASE.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/reflections/reflections/0.9.9/reflections-0.9.9.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/eclipse/persistence/org.eclipse.persistence.asm/2.7.3-6-cuba/org.eclipse.persistence.asm-2.7.3-6-cuba.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.groovy/groovy-sql/2.5.8/48e34af5918320894d1aad7d781ae44f8f12c669/groovy-sql-2.5.8.jar" />
+          <entry name="$MAVEN_REPOSITORY$/com/mysema/commons/mysema-commons-lang/0.2.4/mysema-commons-lang-0.2.4.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.querydsl/querydsl-jpa/4.1.4/b5f7d287efb716f1a9f9b102cab933c0202e119d/querydsl-jpa-4.1.4.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/objenesis/objenesis/2.5.1/objenesis-2.5.1.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/eclipse/persistence/org.eclipse.persistence.jpa.jpql/2.7.3/org.eclipse.persistence.jpa.jpql-2.7.3.jar" />
@@ -55,7 +56,7 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/b421526c5f297295adef1c886e5246c39d4ac629/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/eclipse/persistence/org.eclipse.persistence.oracle/2.7.3/org.eclipse.persistence.oracle-2.7.3.jar" />
           <entry name="$MAVEN_REPOSITORY$/commons-io/commons-io/2.6/commons-io-2.6.jar" />
-          <entry name="$MAVEN_REPOSITORY$/com/mysema/commons/mysema-commons-lang/0.2.4/mysema-commons-lang-0.2.4.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/mindrot/jbcrypt/0.4/jbcrypt-0.4.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.j2objc/j2objc-annotations/1.3/ba035118bc8bac37d7eff77700720999acd9986d/j2objc-annotations-1.3.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-beans/5.2.3.RELEASE/250c8c641433dc06b1b44e4563fa08a2fbf8954/spring-beans-5.2.3.RELEASE.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/dom4j/dom4j/2.1.1/dom4j-2.1.1.jar" />
@@ -81,6 +82,7 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-collections4/4.4/62ebe7544cb7164d87e0637a2a6a2bdc981395e8/commons-collections4-4.4.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-aop/5.2.3.RELEASE/9cdd9a1dd636331767fffcc7fe49a7bb00e7b34b/spring-aop-5.2.3.RELEASE.jar" />
           <entry name="$MAVEN_REPOSITORY$/com/infradna/tool/bridge-method-annotation/1.13/bridge-method-annotation-1.13.jar" />
+          <entry name="$MAVEN_REPOSITORY$/com/haulmont/cuba/cuba-global-querydsl/7.2-SNAPSHOT/cuba-global-querydsl-7.2-SNAPSHOT.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hibernate.validator/hibernate-validator/6.1.1.Final/4f3e8770b4cb2a5d75590df5d9aad3b0447770da/hibernate-validator-6.1.1.Final.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/28.1-jre/b0e91dcb6a44ffb6221b5027e12a5cb34b841145/guava-28.1-jre.jar" />
         </processorPath>

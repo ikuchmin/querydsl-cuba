@@ -1,6 +1,6 @@
 package ru.udya.querydsl.cuba.core;
 
-import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.DataLoadContextQuery;
 import com.querydsl.core.types.ParamExpression;
 import com.querydsl.core.types.ParamNotSetException;
 import com.querydsl.core.types.dsl.Param;
@@ -12,7 +12,7 @@ import java.util.Map;
  * Based on JPAUtil
  */
 public class CubaUtil {
-    public static void setConstants(LoadContext.Query query, Map<Object, String> constants, Map<ParamExpression<?>, Object> params) {
+    public static void setConstants(DataLoadContextQuery query, Map<Object, String> constants, Map<ParamExpression<?>, Object> params) {
 
         for (Map.Entry<Object, String> entry : constants.entrySet()) {
 

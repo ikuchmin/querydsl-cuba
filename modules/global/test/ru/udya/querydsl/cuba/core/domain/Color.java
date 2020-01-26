@@ -13,9 +13,33 @@
  */
 package ru.udya.querydsl.cuba.core.domain;
 
+import com.haulmont.chile.core.datatypes.impl.EnumClass;
+
+import javax.annotation.Nullable;
+
 /**
  * The Enum Color.
  */
-public enum Color {
-    BLACK, TABBY
+public enum Color implements EnumClass<String> {
+    BLACK("black"), TABBY("tabby");
+
+    private String id;
+
+    Color(String value) {
+        this.id = value;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    @Nullable
+    public static Color fromId(String id) {
+        for (Color at : Color.values()) {
+            if (at.getId().equals(id)) {
+                return at;
+            }
+        }
+        return null;
+    }
 }

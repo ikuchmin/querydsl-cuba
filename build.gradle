@@ -82,6 +82,8 @@ configure(globalModule) {
         }
 
         compile group: 'com.querydsl', name: 'querydsl-jpa', version: '4.1.4'
+        compile group: 'com.haulmont.cuba', name: 'cuba-global-querydsl', version: cubaVersion
+
         annotationProcessor group: 'com.querydsl', name: 'querydsl-apt', version: '4.1.4', classifier: 'jpa'
         annotationProcessor configurations.compile
 
@@ -92,6 +94,9 @@ configure(globalModule) {
 
     entitiesEnhancing {
         main {
+            enabled = true
+        }
+        test {
             enabled = true
         }
     }
@@ -110,7 +115,6 @@ configure(coreModule) {
         jdbc(postgres)
         testRuntime(postgres)
 
-        compile group: 'com.haulmont.cuba', name: 'cuba-global-querydsl', version: cubaVersion
         compile group: 'com.querydsl', name: 'querydsl-jpa', version: '4.1.4'
 
         testCompile globalModule.sourceSets.test.output

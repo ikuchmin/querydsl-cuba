@@ -30,7 +30,8 @@ public class QuerydslcubaTestContainer extends TestContainer {
                 // Add this file which is located in CUBA and defines some properties
                 // specifically for test environment. You can replace it with your own
                 // or add another one in the end.
-                "com/haulmont/cuba/testsupport/test-app.properties");
+                "com/haulmont/cuba/testsupport/test-app.properties",
+                "ru/udya/querydsl/cuba/test-app.properties");
         initDbProperties();
     }
 

@@ -13,9 +13,12 @@
  */
 package ru.udya.querydsl.cuba.core.domain;
 
-import javax.persistence.DiscriminatorValue;
+import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -24,126 +27,133 @@ import java.util.Date;
 /**
  * The Class Animal.
  */
-@Entity
-@Table(name = "animal_")
-@DiscriminatorValue("A")
-public class Animal {
-    private boolean alive;
+@SuppressWarnings("DataModelLocalizedMessageMissing")
+@Table(name = "QUERYDSL_CUBA_ANIMAL")
+@Entity(name = "querydslcuba_Animal")
+public class Animal extends StandardEntity {
+
+    private static final long serialVersionUID = - 2805944819260156782L;
+
+    @Column(name = "INT_ID", unique = true)
+    protected Integer intId;
+
+    @Column(name = "ALIVE")
+    protected Boolean alive;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date birthdate;
+    @Column(name = "BIRTHDATE")
+    protected Date birthdate;
 
-    private int weight, toes;
+    @Column(name = "WEIGHT")
+    protected Integer weight;
+
+    @Column(name = "TOES")
+    protected Integer toes;
 
     // needed for JPA tests
-    private double bodyWeight;
+    @Column(name = "BODY_WEIGHT")
+    protected Double bodyWeight;
 
-    private float floatProperty;
+    @Column(name = "DOUBLE_PROPERTY")
+    private Double doubleProperty;
 
-    private Color color;
+    @Column(name = "COLOR")
+    private String color;
 
-//    @Temporal(TemporalType.DATE)
-    private java.sql.Date dateField;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DATE_FIELD")
+    private Date dateField;
 
-    @Id
-    private int id;
-
+    @Column(name = "NAME")
     private String name;
 
-    private java.sql.Time timeField;
-
-    public Animal() { }
-
-    public Animal(int id) {
-        setId(id);
+    public Integer getIntId() {
+        return intId;
     }
 
-    public Date getBirthdate() {
-        return new Date(birthdate.getTime());
+    public void setIntId(Integer intId) {
+        this.intId = intId;
     }
 
-    public double getBodyWeight() {
-        return bodyWeight;
+
+    public static Animal animal(Integer id) {
+        Metadata metadata = AppBeans.get(Metadata.class);
+        Animal animal = metadata.create(Animal.class);
+
+        animal.setIntId(id);
+
+        return animal;
+    }
+
+    public void setColor(Color color) {
+        this.color = color == null ? null : color.getId();
     }
 
     public Color getColor() {
-        return color;
+        return color == null ? null : Color.fromId(color);
     }
 
-    public java.sql.Date getDateField() {
-        return new java.sql.Date(dateField.getTime());
+    public Boolean getAlive() {
+        return alive;
     }
 
-    public int getId() {
-        return id;
+    public void setAlive(Boolean alive) {
+        this.alive = alive;
+    }
+
+    public Date getBirthdate() {
+        return birthdate;
+    }
+
+    public void setBirthdate(Date birthdate) {
+        this.birthdate = birthdate;
+    }
+
+    public Integer getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Integer weight) {
+        this.weight = weight;
+    }
+
+    public Integer getToes() {
+        return toes;
+    }
+
+    public void setToes(Integer toes) {
+        this.toes = toes;
+    }
+
+    public Double getBodyWeight() {
+        return bodyWeight;
+    }
+
+    public void setBodyWeight(Double bodyWeight) {
+        this.bodyWeight = bodyWeight;
+    }
+
+    public Double getDoubleProperty() {
+        return doubleProperty;
+    }
+
+    public void setDoubleProperty(Double doubleProperty) {
+        this.doubleProperty = doubleProperty;
+    }
+
+    public Date getDateField() {
+        return dateField;
+    }
+
+    public void setDateField(Date dateField) {
+        this.dateField = dateField;
     }
 
     public String getName() {
         return name;
     }
 
-    public java.sql.Time getTimeField() {
-        return timeField;
-    }
-
-    public int getToes() {
-        return toes;
-    }
-
-    public int getWeight() {
-        return weight;
-    }
-
-    public boolean isAlive() {
-        return alive;
-    }
-
-    public void setAlive(boolean alive) {
-        this.alive = alive;
-    }
-
-    public void setBirthdate(Date birthdate) {
-        this.birthdate = new Date(birthdate.getTime());
-    }
-
-    public void setBodyWeight(double bodyWeight) {
-        this.bodyWeight = bodyWeight;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    public void setDateField(java.sql.Date dateField) {
-        this.dateField = new java.sql.Date(dateField.getTime());
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
-
-    public void setTimeField(java.sql.Time timeField) {
-        this.timeField = timeField;
-    }
-
-    public void setToes(int toes) {
-        this.toes = toes;
-    }
-
-    public void setWeight(int weight) {
-        this.weight = weight;
-    }
-
-    public float getFloatProperty() {
-        return floatProperty;
-    }
-
-    public void setFloatProperty(float floatProperty) {
-        this.floatProperty = floatProperty;
-    }
-
 }

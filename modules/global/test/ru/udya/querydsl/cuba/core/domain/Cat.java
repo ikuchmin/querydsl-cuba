@@ -13,13 +13,15 @@
  */
 package ru.udya.querydsl.cuba.core.domain;
 
-import javax.persistence.DiscriminatorValue;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderColumn;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -27,21 +29,23 @@ import java.util.Set;
 /**
  * The Class Cat.
  */
-@Entity
-@DiscriminatorValue("C")
+@Entity(name = "querydslcuba_Cat")
 public class Cat extends Animal {
 
-    private int breed;
+    private static final long serialVersionUID = - 713086438605899938L;
 
-    private Color eyecolor;
+    @Column(name = "BREED")
+    private Integer breed;
+
+    @Column(name = "EYECOLOR")
+    private String eyecolor;
+
+    @OneToMany(mappedBy = "mate")
+    private List<Cat> kittens = new ArrayList<>();
 
     @OneToMany
-    @JoinTable(name = "kittens", joinColumns = @JoinColumn(name = "cat_id"), inverseJoinColumns = @JoinColumn(name = "kitten_id"))
-    @OrderColumn(name = "ind")
-    private List<Cat> kittens = new ArrayList<Cat>();
-
-    @OneToMany
-    @JoinTable(name = "kittens_set", joinColumns = @JoinColumn(name = "cat_id"), inverseJoinColumns = @JoinColumn(name = "kitten_id"))
+    @JoinTable(name = "QUERYDSL_CUBA_KITTENS_SET",
+            joinColumns = @JoinColumn(name = "cat_id"), inverseJoinColumns = @JoinColumn(name = "kitten_id"))
     private Set<Cat> kittensSet;
 
 //    @OneToMany
@@ -50,47 +54,72 @@ public class Cat extends Animal {
 //    private Cat[] kittensArray = new Cat[0];
 
     @ManyToOne
+    @JoinColumn(name = "CAT_ID")
     private Cat mate;
-
-    public Cat() { }
-
-    public Cat(int id) {
-        setId(id);
-    }
-
-    public Cat(String name, int id) {
-        setId(id);
-        setName(name);
-    }
-
-    public Cat(String name, int id, Color color) {
-        setId(id);
-        setName(name);
-        setColor(color);
-    }
-
-    public Cat(String name, int id, List<Cat> k) {
-        setId(id);
-        setName(name);
-        kittens.addAll(k);
-    }
-
-    public Cat(String name, int id, double bodyWeight) {
-        this(name, id);
-        setBodyWeight(bodyWeight);
-        setFloatProperty((float) bodyWeight);
-    }
-
-    public int getBreed() {
-        return breed;
-    }
-
-    public Color getEyecolor() {
-        return eyecolor;
-    }
 
     public List<Cat> getKittens() {
         return kittens;
+    }
+
+    public Integer getBreed() {
+        return breed;
+    }
+
+    public static Cat cat() {
+        Metadata metadata = AppBeans.get(Metadata.class);
+        return metadata.create(Cat.class);
+    }
+
+    public static Cat cat(Integer id) {
+        Metadata metadata = AppBeans.get(Metadata.class);
+        Cat cat = metadata.create(Cat.class);
+        cat.setIntId(id);
+
+        return cat;
+    }
+
+    public static Cat cat(String name, Integer id) {
+        Metadata metadata = AppBeans.get(Metadata.class);
+        Cat cat = metadata.create(Cat.class);
+
+        cat.setIntId(id);
+        cat.setName(name);
+
+        return cat;
+    }
+
+    public static Cat cat(String name, Integer id, Color color) {
+        Metadata metadata = AppBeans.get(Metadata.class);
+        Cat cat = metadata.create(Cat.class);
+
+        cat.setIntId(id);
+        cat.setName(name);
+        cat.setColor(color);
+
+        return cat;
+    }
+
+    public static Cat cat (String name, Integer id, List<Cat> k) {
+        Metadata metadata = AppBeans.get(Metadata.class);
+        Cat cat = metadata.create(Cat.class);
+
+        cat.setIntId(id);
+        cat.setName(name);
+        cat.kittens.addAll(k);
+
+        return cat;
+    }
+
+    public static Cat cat(String name, Integer id, double bodyWeight) {
+        Cat cat = Cat.cat(name, id);
+        cat.setBodyWeight(bodyWeight);
+        cat.setDoubleProperty(bodyWeight);
+
+        return cat;
+    }
+
+    public Color getEyecolor() {
+        return eyecolor == null ? null : Color.fromId(eyecolor);
     }
 
     public Cat getMate() {

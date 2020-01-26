@@ -13,35 +13,59 @@
  */
 package ru.udya.querydsl.cuba.core.domain;
 
-import javax.persistence.ElementCollection;
+import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
-import java.util.Map;
 
 /**
  * The Class Show.
  */
-@Entity
-@Table(name = "show_")
-public class Show {
+@Table(name = "QUERYDSL_CUBA_SHOW")
+@Entity(name = "querydslcuba_Show")
+public class Show extends StandardEntity {
 
-    @Id
-    long id;
+    private static final long serialVersionUID = - 1107270705122358675L;
 
-    @ElementCollection
-    @MapKeyColumn(name = "acts_key")
-    public Map<String, String> acts;
+    @Column(name = "INT_ID", unique = true)
+    protected Long lngId;
 
+    @JoinColumn
     @ManyToOne
     public Show parent;
 
-    public Show() { }
-
-    public Show(int id) {
-        this.id = id;
+    public static Show show() {
+        Metadata metadata = AppBeans.get(Metadata.class);
+        return metadata.create(Show.class);
     }
 
+    public static Show show(long id) {
+        Metadata metadata = AppBeans.get(Metadata.class);
+        Show show = metadata.create(Show.class);
+
+        show.setLngId(id);
+
+        return show;
+    }
+
+    public Long getLngId() {
+        return lngId;
+    }
+
+    public void setLngId(Long lngId) {
+        this.lngId = lngId;
+    }
+
+    public Show getParent() {
+        return parent;
+    }
+
+    public void setParent(Show parent) {
+        this.parent = parent;
+    }
 }
