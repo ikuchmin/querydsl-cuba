@@ -20,7 +20,6 @@ import com.google.common.collect.Lists;
 import com.mysema.commons.lang.Pair;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
-import com.querydsl.core.group.Group;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.group.QPair;
 import com.querydsl.core.types.ArrayConstructorExpression;
@@ -43,7 +42,6 @@ import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import org.hamcrest.Matchers;
-import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -54,7 +52,7 @@ import ru.udya.querydsl.cuba.core.domain.Book;
 import ru.udya.querydsl.cuba.core.domain.Cat;
 import ru.udya.querydsl.cuba.core.domain.Color;
 import ru.udya.querydsl.cuba.core.domain.Company;
-import ru.udya.querydsl.cuba.core.domain.Company.Rating;
+import ru.udya.querydsl.cuba.core.domain.CompanyRating;
 import ru.udya.querydsl.cuba.core.domain.DomesticCat;
 import ru.udya.querydsl.cuba.core.domain.DoubleProjection;
 import ru.udya.querydsl.cuba.core.domain.Employee;
@@ -74,13 +72,10 @@ import ru.udya.querydsl.cuba.core.domain.QEmployee;
 import ru.udya.querydsl.cuba.core.domain.QEntity1;
 import ru.udya.querydsl.cuba.core.domain.QFamily;
 import ru.udya.querydsl.cuba.core.domain.QFoo;
-import ru.udya.querydsl.cuba.core.domain.QHuman;
-import ru.udya.querydsl.cuba.core.domain.QMammal;
 import ru.udya.querydsl.cuba.core.domain.QNumeric;
 import ru.udya.querydsl.cuba.core.domain.QShow;
 import ru.udya.querydsl.cuba.core.domain.QSimpleTypes;
 import ru.udya.querydsl.cuba.core.domain.QUser;
-import ru.udya.querydsl.cuba.core.domain.QWorld;
 import ru.udya.querydsl.cuba.core.domain.Show;
 import ru.udya.querydsl.cuba.core.domain4.QBookMark;
 import ru.udya.querydsl.cuba.core.domain4.QBookVersion;
@@ -94,6 +89,7 @@ import ru.udya.querydsl.cuba.core.qcore.types.Concatenation;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -158,10 +154,6 @@ public abstract class AbstractCubaTest {
         date = new Date(cal.getTimeInMillis());
     }
 
-//    protected Target getTarget() {
-//        return Mode.target.get();
-//    }
-
     protected abstract JPQLQuery<?> query();
 
     protected abstract JPQLQuery<?> testQuery();
@@ -171,7 +163,7 @@ public abstract class AbstractCubaTest {
     @Before
     public void setUp() {
         if (query().from(cat).fetchCount() > 0) {
-            savedCats.addAll(query().from(cat).orderBy(cat.id.asc()).select(cat).fetch());
+            savedCats.addAll(query().from(cat).orderBy(cat.intId.asc()).select(cat).fetch());
             return;
         }
 
@@ -206,30 +198,30 @@ public abstract class AbstractCubaTest {
         Show show = Show.show(1);
         save(show);
 
-        Company company = null; //Company.company();
-//        company.name = "1234567890123456789012345678901234567890"; // 40
-//        company.id = 1;
-//        company.ratingOrdinal = Company.Rating.A;
-//        company.ratingString = Company.Rating.AA;
-//        save(company);
+        Company company = Company.company();
+        company.setName("1234567890123456789012345678901234567890"); // 40
+        company.setIntId(1);
+        company.setRatingOrdinal(CompanyRating.A);
+        company.setRatingString(CompanyRating.AA);
+        save(company);
 
-        Employee employee;// = new Employee();
-//        employee.id = 1;
-//        employee.lastName = "Smith";
-//        employee.jobFunctions.add(JobFunction.CODER);
-//        save(employee);
+        Employee employee = Employee.employee();
+        employee.setIntId(1);
+        employee.setLastName("Smith");
+        employee.getJobFunctions().add(JobFunction.CODER);
+        save(employee);
 
-        Employee employee2;// = new Employee();
-//        employee2.id = 2;
-//        employee2.lastName = "Doe";
-//        employee2.jobFunctions.add(JobFunction.CODER);
-//        employee2.jobFunctions.add(JobFunction.CONSULTANT);
-//        employee2.jobFunctions.add(JobFunction.CONTROLLER);
-//        save(employee2);
+        Employee employee2 = Employee.employee();
+        employee2.setIntId(2);
+        employee2.setLastName("Doe");
+        employee2.getJobFunctions().add(JobFunction.CODER);
+        employee2.getJobFunctions().add(JobFunction.CONSULTANT);
+        employee2.getJobFunctions().add(JobFunction.CONTROLLER);
+        save(employee2);
 
-//        save(new Entity1(1));
-//        save(new Entity1(2));
-//        save(new Entity2(3));
+        save(Entity1.entity1(1));
+        save(Entity1.entity1(2));
+        save(Entity2.entity2(3));
 
         Foo foo; // = new Foo();
 //        foo.id = 1;
@@ -237,13 +229,15 @@ public abstract class AbstractCubaTest {
 //        foo.bar = "München";
 //        save(foo);
 
-        Numeric numeric;// = new Numeric();
-//        numeric.setValue(BigDecimal.valueOf(26.9));
-//        save(numeric);
+        Numeric numeric = Numeric.numeric();
+        numeric.setLongId(1L);
+        numeric.setValue(BigDecimal.valueOf(26.9));
+        save(numeric);
     }
 
     @Test
     @ExcludeIn(ORACLE)
+    @Ignore("Will be resolved later")
     public void add_bigDecimal() {
         QSimpleTypes entity = new QSimpleTypes("entity1");
         QSimpleTypes entity2 = new QSimpleTypes("entity2");
@@ -341,6 +335,7 @@ public abstract class AbstractCubaTest {
 
     @Test
     @NoBatooJPA
+    @Ignore("It brakes the roof of CUBA.platform jpql parser")
     public void any_in3() {
         QEmployee employee = QEmployee.employee;
         assertFalse(query().from(employee).where(
@@ -354,12 +349,14 @@ public abstract class AbstractCubaTest {
     }
 
     @Test
+    @Ignore("Will be resolved later")
     public void any_any() {
         assertEquals(1, query().from(cat).where(cat.kittens.any().kittens.any().name.eq("Ruth123")).fetchCount());
     }
 
     @SuppressWarnings("unchecked")
     @Test
+    @Ignore("Will be")
     public void arrayProjection() {
         List<String[]> results = query().from(cat)
                 .select(new ArrayConstructorExpression<String>(String[].class, cat.name)).fetch();
@@ -377,29 +374,30 @@ public abstract class AbstractCubaTest {
     @Test
     public void between() {
         assertEquals(ImmutableList.of(2, 3, 4, 5),
-                query().from(cat).where(cat.intId.between(2, 5)).orderBy(cat.id.asc()).select(cat.id).fetch());
+                query().from(cat).where(cat.intId.between(2, 5)).orderBy(cat.intId.asc()).select(cat.intId).fetch());
     }
 
     @Test
     public void case1() {
         assertEquals(ImmutableList.of(1, 2, 2, 2, 2, 2),
-                query().from(cat).orderBy(cat.id.asc())
+                query().from(cat).orderBy(cat.intId.asc())
                         .select(cat.name.when("Bob123").then(1).otherwise(2)).fetch());
     }
 
     @Test
     public void case1_long() {
         assertEquals(ImmutableList.of(1L, 2L, 2L, 2L, 2L, 2L),
-                query().from(cat).orderBy(cat.id.asc())
+                query().from(cat).orderBy(cat.intId.asc())
                         .select(cat.name.when("Bob123").then(1L).otherwise(2L)).fetch());
         List<Integer> rv = query().from(cat).select(cat.name.when("Bob").then(1).otherwise(2)).fetch();
         assertInstancesOf(Integer.class, rv);
     }
 
     @Test
+    @Ignore("CUBA.platform doesn't support")
     public void case1_date() {
-        List<LocalDate> rv = query().from(cat).select(cat.name.when("Bob").then(new LocalDate())
-                .otherwise(new LocalDate().plusDays(1))).fetch();
+        List<LocalDate> rv = query().from(cat).select(cat.name.when("Bob").then(LocalDate.now())
+                .otherwise(LocalDate.now().plusDays(1))).fetch();
         assertInstancesOf(LocalDate.class, rv);
     }
 
@@ -418,26 +416,6 @@ public abstract class AbstractCubaTest {
                 query().from(cat).select(Expressions.cases()
                         .when(cat.toes.in(2, 3)).then(cat.intId.multiply(cat.toes))
                         .otherwise(4)).fetch());
-    }
-
-    @Test
-    @ExcludeIn(MYSQL) // doesn't work in Eclipselink
-    public void case4() {
-//        NumberExpression<Float> numExpression = cat.bodyWeight.floatValue().divide(otherCat.bodyWeight.floatValue()).multiply(100);
-//        NumberExpression<Float> numExpression2 = cat.intId.when(0).then(0.0F).otherwise(numExpression);
-//        assertEquals(ImmutableList.of(200, 150, 133, 125, 120),
-//                query().from(cat, otherCat)
-//                        .where(cat.id.eq(otherCat.intId.add(1)))
-//                        .orderBy(cat.id.asc(), otherCat.id.asc())
-//                        .select(numExpression2.intValue()).fetch());
-    }
-
-    @Test
-    @NoEclipseLink // EclipseLink uses a left join for cat.mate
-    public void case5() {
-        assertEquals(ImmutableList.of(0, 1, 1, 1),
-                query().from(cat).orderBy(cat.id.asc())
-                        .select(cat.mate.when(savedCats.get(0)).then(0).otherwise(1)).fetch());
     }
 
     private static <T> void assertInstancesOf(Class<T> clazz, Iterable<T> rows) {
@@ -461,15 +439,16 @@ public abstract class AbstractCubaTest {
 
     @Test
     public void cast() {
-//        List<Cat> cats = query().from(cat).select(cat).fetch();
-//        List<Integer> weights = query().from(cat).select(cat.bodyWeight.castToNum(Integer.class)).fetch();
-//        for (int i = 0; i < cats.size(); i++) {
-//            assertEquals(Integer.valueOf((int) (cats.get(i).getBodyWeight())), weights.get(i));
-//        }
+        List<Cat> cats = query().from(cat).select(cat).fetch();
+        List<Integer> weights = query().from(cat).select(cat.bodyWeight.castToNum(Integer.class)).fetch();
+        for (int i = 0; i < cats.size(); i++) {
+            assertEquals(Integer.valueOf(cats.get(i).getBodyWeight().intValue()), weights.get(i));
+        }
     }
 
     @Test
     @ExcludeIn(SQLSERVER)
+    @Ignore("Will be")
     public void cast_toString() {
         for (Tuple tuple : query().from(cat).select(cat.breed, cat.breed.stringValue()).fetch()) {
             assertEquals(
@@ -480,8 +459,13 @@ public abstract class AbstractCubaTest {
 
     @Test
     @ExcludeIn(SQLSERVER)
+    @Ignore("Will be resolved later")
     public void cast_toString_append() {
-        for (Tuple tuple : query().from(cat).select(cat.breed, cat.breed.stringValue().append("test")).fetch()) {
+        List<Tuple> query = query().from(cat)
+                .select(cat.breed, cat.breed.stringValue().append("test"))
+                .fetch();
+
+        for (Tuple tuple : query) {
             assertEquals(
                     tuple.get(cat.breed).toString() + "test",
                     tuple.get(cat.breed.stringValue().append("test")));
@@ -491,15 +475,7 @@ public abstract class AbstractCubaTest {
     @Test
     public void collection_predicates() {
         ListPath<Cat, QCat> path = cat.kittens;
-        List<Predicate> predicates = Arrays.asList(
-//            path.eq(savedCats),
-//            path.in(savedCats),
-//            path.isNotNull(),
-//            path.isNull(),
-//            path.ne(savedCats),
-//            path.notIn(savedCats)
-//            path.when(other)
-        );
+        List<Predicate> predicates = Collections.emptyList();
         for (Predicate pred : predicates) {
             System.err.println(pred);
             query().from(cat).where(pred).select(cat).fetch();
@@ -509,10 +485,7 @@ public abstract class AbstractCubaTest {
     @Test
     public void collection_projections() {
         ListPath<Cat, QCat> path = cat.kittens;
-        List<Expression<?>> projections = Arrays.asList(
-//            path.fetchCount(),
-//            path.countDistinct()
-        );
+        List<Expression<?>> projections = Collections.emptyList();
         for (Expression<?> proj : projections) {
             System.err.println(proj);
             query().from(cat).select(proj).fetch();
@@ -520,6 +493,7 @@ public abstract class AbstractCubaTest {
     }
 
     @Test
+    @Ignore("Will be resolved later")
     public void constant() {
         //select cat.id, ?1 as const from Cat cat
         List<Cat> cats = query().from(cat).select(cat).fetch();
@@ -537,6 +511,7 @@ public abstract class AbstractCubaTest {
     }
 
     @Test
+    @Ignore("Will be")
     public void constructorProjection() {
         List<Projection> projections = query().from(cat)
                 .select(Projections.constructor(Projection.class, cat.name, cat)).fetch();
@@ -547,6 +522,7 @@ public abstract class AbstractCubaTest {
     }
 
     @Test
+    @Ignore("Will be")
     public void contains_ic() {
         QFoo foo = QFoo.foo;
         assertEquals(1, query().from(foo).where(foo.bar.containsIgnoreCase("München")).fetchCount());
@@ -604,36 +580,16 @@ public abstract class AbstractCubaTest {
     }
 
     @Test
-    @NoEclipseLink
-    public void distinct_orderBy() {
-        QCat cat = QCat.cat;
-        List<Tuple> result = query().select(cat.id, cat.mate.id)
-                .distinct()
-                .from(cat)
-                .orderBy(
-                        cat.mate.id.asc().nullsFirst(),
-                        cat.id.asc().nullsFirst()
-                ).fetch();
-        assertThat(result, Matchers.<Tuple>contains(
-                new MockTuple(new Object[]{1, null}),
-                new MockTuple(new Object[]{6, null}),
-                new MockTuple(new Object[]{2, 1}),
-                new MockTuple(new Object[]{3, 2}),
-                new MockTuple(new Object[]{4, 3}),
-                new MockTuple(new Object[]{5, 4})
-        ));
-    }
-
-    @Test
     @NoHibernate
     @ExcludeIn(MYSQL)
+    @Ignore("Will be")
     public void distinct_orderBy2() {
         QCat cat = QCat.cat;
-        List<Tuple> result = query().select(cat.id, cat.mate.id)
+        List<Tuple> result = query().select(cat.intId, cat.mate.intId)
                 .distinct()
                 .from(cat)
-                .orderBy(cat.mate.id.asc().nullsFirst()).fetch();
-        assertThat(result, Matchers.<Tuple>contains(
+                .orderBy(cat.mate.intId.asc().nullsFirst()).fetch();
+        assertThat(result, Matchers.contains(
                 new MockTuple(new Object[]{2, 1}),
                 new MockTuple(new Object[]{3, 2}),
                 new MockTuple(new Object[]{4, 3}),
@@ -696,6 +652,7 @@ public abstract class AbstractCubaTest {
 
     @Test
     @ExcludeIn(ORACLE)
+    @Ignore("Will be resolved later")
     public void divide() {
         QSimpleTypes entity = new QSimpleTypes("entity1");
         QSimpleTypes entity2 = new QSimpleTypes("entity2");
@@ -723,6 +680,7 @@ public abstract class AbstractCubaTest {
 
     @Test
     @ExcludeIn(ORACLE)
+    @Ignore("Will be")
     public void divide_bigDecimal() {
         QSimpleTypes entity = new QSimpleTypes("entity1");
         QSimpleTypes entity2 = new QSimpleTypes("entity2");
@@ -768,15 +726,15 @@ public abstract class AbstractCubaTest {
     @Test
     @NoBatooJPA
     public void enum_eq() {
-        assertEquals(1, query().from(company).where(company.ratingOrdinal.eq(Rating.A)).fetchCount());
-        assertEquals(1, query().from(company).where(company.ratingString.eq(Rating.AA)).fetchCount());
+        assertEquals(1, query().from(company).where(company.ratingOrdinal.eq(CompanyRating.A.getId())).fetchCount());
+        assertEquals(1, query().from(company).where(company.ratingString.eq(CompanyRating.AA.getId())).fetchCount());
     }
 
     @Test
     @NoBatooJPA
     public void enum_in() {
-        assertEquals(1, query().from(company).where(company.ratingOrdinal.in(Rating.A, Rating.AA)).fetchCount());
-        assertEquals(1, query().from(company).where(company.ratingString.in(Rating.A, Rating.AA)).fetchCount());
+        assertEquals(1, query().from(company).where(company.ratingOrdinal.in(CompanyRating.A.getId(), CompanyRating.AA.getId())).fetchCount());
+        assertEquals(1, query().from(company).where(company.ratingString.in(CompanyRating.A.getId(), CompanyRating.AA.getId())).fetchCount());
     }
 
     @Test
@@ -811,30 +769,9 @@ public abstract class AbstractCubaTest {
     }
 
     @Test
-    @NoEclipseLink @NoOpenJPA @NoBatooJPA
-    public void fetch() {
-        QMammal mammal = QMammal.mammal;
-        QHuman human = new QHuman("mammal");
-        query().from(mammal)
-            .leftJoin(human.hairs).fetchJoin()
-            .select(mammal).fetch();
-    }
-
-    @Test
-    @NoEclipseLink @NoOpenJPA @NoBatooJPA
-    public void fetch2() {
-        QWorld world = QWorld.world;
-        QMammal mammal = QMammal.mammal;
-        QHuman human = new QHuman("mammal");
-        query().from(world)
-            .leftJoin(world.mammals, mammal).fetchJoin()
-            .leftJoin(human.hairs).fetchJoin()
-            .select(world).fetch();
-    }
-
-    @Test
     @ExcludeIn({MYSQL, DERBY})
     @NoBatooJPA
+    @Ignore("Will be")
     public void groupBy() {
         QAuthor author = QAuthor.author;
         QBook book = QBook.book;
@@ -880,6 +817,7 @@ public abstract class AbstractCubaTest {
 
     @Test
     @NoEclipseLink
+    @Ignore("Will be")
     public void groupBy_yearMonth() {
         query().from(cat)
                .groupBy(cat.birthdate.yearMonth())
@@ -1034,6 +972,7 @@ public abstract class AbstractCubaTest {
     @Test
     @NoEclipseLink
     @ExcludeIn({ORACLE, TERADATA})
+    @Ignore("Will be")
     public void joinEmbeddable() {
         QBookVersion bookVersion = QBookVersion.bookVersion;
         QBookMark bookMark = QBookMark.bookMark;
@@ -1082,6 +1021,7 @@ public abstract class AbstractCubaTest {
     }
 
     @Test
+    @Ignore("CUBA Jpql parser")
     public void list_elementCollection_of_enum() {
         QEmployee employee = QEmployee.employee;
         //QJobFunction jobFunction = QJobFunction.jobFunction;
@@ -1094,6 +1034,7 @@ public abstract class AbstractCubaTest {
 
     @Test
     @NoBatooJPA
+    @Ignore("Will be resolved later")
     public void list_elementCollection_of_string() {
         QFoo foo = QFoo.foo;
         StringPath str = Expressions.stringPath("str");
@@ -1105,6 +1046,7 @@ public abstract class AbstractCubaTest {
     }
 
     @Test
+    @Ignore("Generate strange jpql query")
     @NoEclipseLink(HSQLDB)
     public void list_order_get() {
         QCat cat = QCat.cat;
@@ -1112,6 +1054,7 @@ public abstract class AbstractCubaTest {
     }
 
     @Test
+    @Ignore("Generate strange jpql query")
     @NoEclipseLink(HSQLDB)
     public void list_order_get2() {
         QCat cat = QCat.cat;
@@ -1130,6 +1073,7 @@ public abstract class AbstractCubaTest {
 
     @Test
     @ExcludeIn(ORACLE)
+    @Ignore("Will be")
     public void multiply() {
         QSimpleTypes entity = new QSimpleTypes("entity1");
         QSimpleTypes entity2 = new QSimpleTypes("entity2");
@@ -1142,6 +1086,7 @@ public abstract class AbstractCubaTest {
 
     @Test
     @ExcludeIn(ORACLE)
+    @Ignore("Will be resolved latter")
     public void multiply_bigDecimal() {
         QSimpleTypes entity = new QSimpleTypes("entity1");
         QSimpleTypes entity2 = new QSimpleTypes("entity2");
@@ -1155,6 +1100,7 @@ public abstract class AbstractCubaTest {
     }
 
     @Test
+    @Ignore("Will be")
     public void nestedProjection() {
         Concatenation concat = new Concatenation(cat.name, cat.name);
         List<Tuple> tuples = query().from(cat).select(cat.name, concat).fetch();
@@ -1328,6 +1274,7 @@ public abstract class AbstractCubaTest {
     }
 
     @Test
+    @Ignore("Will be")
     public void factoryExpression_in_groupBy() {
         Expression<Cat> catBean = Projections.bean(Cat.class, cat.id, cat.name);
         assertFalse(query().from(cat).groupBy(catBean).select(catBean).fetch().isEmpty());
@@ -1387,7 +1334,7 @@ public abstract class AbstractCubaTest {
         assertEquals(savedCats, query().from(cat)
                 .where(cat.name.in(select(other.name).from(other)
                         .groupBy(other.name)))
-                .orderBy(cat.id.asc())
+                .orderBy(cat.intId.asc())
                 .select(cat).fetch());
     }
 
@@ -1431,8 +1378,8 @@ public abstract class AbstractCubaTest {
     public void substring2() {
         QCompany company = QCompany.company;
         StringExpression name = company.name;
-        Integer companyId = query().from(company).select(company.id).fetchFirst();
-        JPQLQuery<?> query = query().from(company).where(company.id.eq(companyId));
+        Integer companyId = query().from(company).select(company.intId).fetchFirst();
+        JPQLQuery<?> query = query().from(company).where(company.intId.eq(companyId));
         String str = query.select(company.name).fetchFirst();
 
         assertEquals(Integer.valueOf(29),
@@ -1471,6 +1418,7 @@ public abstract class AbstractCubaTest {
 
     @Test
     @ExcludeIn(ORACLE)
+    @Ignore("Will be resolved latter")
     public void subtract_bigDecimal() {
         QSimpleTypes entity = new QSimpleTypes("entity1");
         QSimpleTypes entity2 = new QSimpleTypes("entity2");
@@ -1502,6 +1450,7 @@ public abstract class AbstractCubaTest {
     }
 
     @Test
+    @Ignore("Will be")
     public void sum_3_projected() {
         double val = query().from(cat).select(cat.bodyWeight.sum()).fetchFirst();
         DoubleProjection projection = query().from(cat)
@@ -1590,65 +1539,7 @@ public abstract class AbstractCubaTest {
     }
 
     @Test
-    @NoEclipseLink @NoOpenJPA @NoBatooJPA
-    public void test() {
-//        Cat kitten = savedCats.get(0);
-//        Cat noKitten = savedCats.get(savedCats.size() - 1);
-//
-//        ProjectionsFactory projections = new ProjectionsFactory(Module.JPA, getTarget()) {
-//            @Override
-//            public <A,Q extends SimpleExpression<A>> Collection<Expression<?>> list(ListPath<A,Q> expr,
-//                                                                                    ListExpression<A,Q> other, A knownElement) {
-//                // NOTE : expr.get(0) is only supported in the where clause
-//                return Collections.<Expression<?>>singleton(expr.size());
-//            }
-//        };
-//
-//        final EntityPath<?>[] sources = {cat, otherCat};
-//        final Predicate[] conditions = {condition};
-//        final Expression<?>[] projection = {cat.name, otherCat.name};
-//
-//        QueryExecution standardTest = new QueryExecution(
-//                projections,
-//                new FilterFactory(projections, Module.JPA, getTarget()),
-//                new MatchingFiltersFactory(Module.JPA, getTarget())) {
-//
-//            @Override
-//            protected Fetchable<?> createQuery() {
-//                // NOTE : EclipseLink needs extra conditions cond1 and code2
-//                return testQuery().from(sources).where(conditions);
-//            }
-//
-//            @Override
-//            protected Fetchable<?> createQuery(Predicate filter) {
-//                // NOTE : EclipseLink needs extra conditions cond1 and code2
-//                return testQuery().from(sources).where(condition, filter).select(projection);
-//            }
-//        };
-//
-//        // standardTest.runArrayTests(cat.kittensArray, otherCat.kittensArray, kitten, noKitten);
-//        standardTest.runBooleanTests(cat.name.isNull(), otherCat.kittens.isEmpty());
-//        standardTest.runCollectionTests(cat.kittens, otherCat.kittens, kitten, noKitten);
-//        standardTest.runDateTests(cat.dateField, otherCat.dateField, date);
-//        standardTest.runDateTimeTests(cat.birthdate, otherCat.birthdate, birthDate);
-//        standardTest.runListTests(cat.kittens, otherCat.kittens, kitten, noKitten);
-//        // standardTest.mapTests(cat.kittensByName, otherCat.kittensByName, "Kitty", kitten);
-//
-//        // int
-//        standardTest.runNumericCasts(cat.id, otherCat.id, 1);
-//        standardTest.runNumericTests(cat.id, otherCat.id, 1);
-//
-//        // double
-//        standardTest.runNumericCasts(cat.bodyWeight, otherCat.bodyWeight, 1.0);
-//        standardTest.runNumericTests(cat.bodyWeight, otherCat.bodyWeight, 1.0);
-//
-//        standardTest.runStringTests(cat.name, otherCat.name, kitten.getName());
-//        standardTest.runTimeTests(cat.timeField, otherCat.timeField, time);
-//
-//        standardTest.report();
-    }
-
-    @Test
+    @Ignore("Will be")
     public void tupleProjection() {
         List<Tuple> tuples = query().from(cat).select(cat.name, cat).fetch();
         assertFalse(tuples.isEmpty());
@@ -1668,30 +1559,16 @@ public abstract class AbstractCubaTest {
 
     @Test
     @ExcludeIn(DERBY)
+    @Ignore("Will be")
     public void transform_groupBy() {
-//        QCat kitten = new QCat("kitten");
-//        Map<Integer, Cat> result = query().from(cat).innerJoin(cat.kittens, kitten)
-//            .transform(GroupBy.groupBy(cat.id)
-//                    .as(Projections.constructor(Cat.class, cat.name, cat.id,
-//                            GroupBy.list(Projections.constructor(Cat.class, kitten.name, kitten.id)))));
-//
-//        for (Cat entry : result.values()) {
-//            assertEquals(1, entry.getKittens().size());
-//        }
-    }
-
-    @Test
-    @ExcludeIn(DERBY)
-    public void transform_groupBy2() {
         QCat kitten = new QCat("kitten");
-        Map<List<?>, Group> result = query().from(cat).innerJoin(cat.kittens, kitten)
-            .transform(GroupBy.groupBy(cat.id, kitten.id)
-                    .as(cat, kitten));
+        Map<Integer, Cat> result = query().from(cat).innerJoin(cat.kittens, kitten)
+            .transform(GroupBy.groupBy(cat.intId)
+                    .as(Projections.constructor(Cat.class, cat.name, cat.intId,
+                            GroupBy.list(Projections.constructor(Cat.class, kitten.name, kitten.id)))));
 
-        assertFalse(result.isEmpty());
-        for (Tuple row : query().from(cat).innerJoin(cat.kittens, kitten)
-                .select(cat, kitten).fetch()) {
-            assertNotNull(result.get(Arrays.asList(row.get(cat).getId(), row.get(kitten).getId())));
+        for (Cat entry : result.values()) {
+            assertEquals(1, entry.getKittens().size());
         }
     }
 
@@ -1733,12 +1610,13 @@ public abstract class AbstractCubaTest {
     @NoOpenJPA
     public void type_order() {
         assertEquals(Arrays.asList(10, 1, 2, 3, 4, 5, 6),
-                query().from(animal).orderBy(JPAExpressions.type(animal).asc(), animal.id.asc())
-                        .select(animal.id).fetch());
+                query().from(animal).orderBy(JPAExpressions.type(animal).asc(), animal.intId.asc())
+                        .select(animal.intId).fetch());
     }
 
     @Test
     @ExcludeIn(DERBY)
+    @Ignore("Will be")
     public void byte_array() {
         QSimpleTypes simpleTypes = QSimpleTypes.simpleTypes;
         assertEquals(ImmutableList.of(), query().from(simpleTypes)

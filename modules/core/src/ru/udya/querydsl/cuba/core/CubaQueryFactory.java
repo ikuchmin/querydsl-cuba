@@ -1,6 +1,7 @@
 package ru.udya.querydsl.cuba.core;
 
 import com.haulmont.cuba.core.TransactionalDataManager;
+import com.haulmont.cuba.core.global.Metadata;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.dml.DeleteClause;
 import com.querydsl.core.dml.UpdateClause;
@@ -19,24 +20,30 @@ public class CubaQueryFactory implements JPQLQueryFactory {
 
     private final Provider<TransactionalDataManager> dataManagerProvider;
 
-    public CubaQueryFactory(TransactionalDataManager dataManager) {
+    private final Provider<Metadata> metadataProvider;
+
+    public CubaQueryFactory(TransactionalDataManager dataManager, Metadata metadata) {
         this.dataManagerProvider = () -> dataManager;
+        this.metadataProvider = () -> metadata;
         this.templates = null;
     }
 
-    public CubaQueryFactory(JPQLTemplates templates, TransactionalDataManager dataManager) {
+    public CubaQueryFactory(JPQLTemplates templates, TransactionalDataManager dataManager, Metadata metadata) {
         this.dataManagerProvider = () -> dataManager;
         this.templates = templates;
+        this.metadataProvider = () -> metadata;
     }
 
-    public CubaQueryFactory(Provider<TransactionalDataManager> dataManagerProvider) {
+    public CubaQueryFactory(Provider<TransactionalDataManager> dataManagerProvider, Provider<Metadata> metadataProvider) {
         this.dataManagerProvider = dataManagerProvider;
+        this.metadataProvider = metadataProvider;
         this.templates = null;
     }
 
-    public CubaQueryFactory(JPQLTemplates templates, Provider<TransactionalDataManager> dataManagerProvider) {
+    public CubaQueryFactory(JPQLTemplates templates, Provider<TransactionalDataManager> dataManagerProvider, Provider<Metadata> metadataProvider) {
         this.dataManagerProvider = dataManagerProvider;
         this.templates = templates;
+        this.metadataProvider = metadataProvider;
     }
 
     @Override
@@ -97,9 +104,9 @@ public class CubaQueryFactory implements JPQLQueryFactory {
     @Override
     public CubaQuery<?> query() {
         if (templates != null) {
-            return new CubaQuery<Void>(dataManagerProvider.get(), templates);
+            return new CubaQuery<Void>(dataManagerProvider.get(), metadataProvider.get(), templates);
         } else {
-            return new CubaQuery<Void>(dataManagerProvider.get());
+            return new CubaQuery<Void>(dataManagerProvider.get(), metadataProvider.get());
         }
     }
 }

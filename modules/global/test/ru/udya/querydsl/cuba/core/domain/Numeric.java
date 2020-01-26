@@ -1,30 +1,38 @@
 package ru.udya.querydsl.cuba.core.domain;
 
+import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
-import java.io.Serializable;
 import java.math.BigDecimal;
 
-@Entity
-@Table(name = "numeric_")
-public class Numeric implements Serializable {
+@Table(name = "QUERYDSL_CUBA_NUMERIC")
+@Entity(name = "querydslcuba_Numeric")
+public class Numeric extends StandardEntity {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue
-    private Long id;
+    @Column(name = "LONG_ID")
+    private Long longId;
 
+    @Column(name = "VALUE")
     private BigDecimal value;
 
-    public Long getId() {
-        return id;
+    public static Numeric numeric() {
+        Metadata metadata = AppBeans.get(Metadata.class);
+        return metadata.create(Numeric.class);
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Long getLongId() {
+        return longId;
+    }
+
+    public void setLongId
+            (Long longId) {
+        this.longId = longId;
     }
 
     public BigDecimal getValue() {

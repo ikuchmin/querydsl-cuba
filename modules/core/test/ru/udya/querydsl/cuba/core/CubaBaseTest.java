@@ -4,11 +4,9 @@ import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.TransactionalDataManager;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.Metadata;
 import com.querydsl.core.DefaultQueryMetadata;
 import com.querydsl.jpa.JPQLQuery;
-import com.querydsl.jpa.impl.JPAQuery;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -36,12 +34,12 @@ public class CubaBaseTest extends AbstractCubaTest {
 
     @Override
     protected JPQLQuery<?> query() {
-        return new CubaQuery<>(txDm);
+        return new CubaQuery<>(txDm, metadata);
     }
 
     @Override
     protected JPQLQuery<?> testQuery() {
-        return new CubaQuery<>(txDm, new DefaultQueryMetadata());
+        return new CubaQuery<>(txDm, metadata, new DefaultQueryMetadata());
     }
 
     @Override

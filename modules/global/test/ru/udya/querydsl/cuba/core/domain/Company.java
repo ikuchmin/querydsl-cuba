@@ -13,12 +13,13 @@
  */
 package ru.udya.querydsl.cuba.core.domain;
 
+import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.Index;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -27,29 +28,93 @@ import java.util.List;
 /**
  * The Class Company.
  */
-@Entity
-@Table(name = "company_")
-public class Company {
+@SuppressWarnings("DataModelLocalizedMessageMissing")
+@Entity(name = "querydslcuba_company")
+@Table(name = "QUERYDSL_CUBA_COMPANY")
+public class Company extends StandardEntity {
 
-    public enum Rating { A, AA, AAA }
+    private static final long serialVersionUID = - 8839345132351963702L;
 
-    @Enumerated
-    public Rating ratingOrdinal;
+    @Column(name = "INT_ID", unique = true)
+    protected Integer intId;
 
-    @Enumerated(EnumType.STRING)
-    public Rating ratingString;
+    @Column(name = "NAME")
+    protected String name;
+
+    @Column(name = "OFFICIAL_NAME")
+    protected String officialName;
+
+    @Column(name = "RATING_ORDINAL")
+    protected String ratingOrdinal;
+
+    @Column(name = "RATING_STRING")
+    protected String ratingString;
 
     @ManyToOne
-    public Employee ceo;
+    @JoinColumn(name = "EMPLOYEE_ID")
+    protected Employee ceo;
 
-    @OneToMany
-    public List<Department> departments;
+    @OneToMany(mappedBy = "company")
+    protected List<Department> departments;
 
-    @Id
-    public int id;
+    public static Company company() {
+        Metadata metadata = AppBeans.get(Metadata.class);
+        return metadata.create(Company.class);
+    }
 
-    public String name;
+    public Integer getIntId() {
+        return intId;
+    }
 
-    @Column(name = "official_name")
-    public String officialName;
+    public void setIntId(Integer intId) {
+        this.intId = intId;
+    }
+
+    public void setRatingOrdinal(CompanyRating ratingOrdinal) {
+        this.ratingOrdinal = ratingOrdinal == null ? null : ratingOrdinal.getId();
+    }
+
+    public CompanyRating getRatingOrdinal() {
+        return ratingOrdinal == null ? null : CompanyRating.fromId(ratingOrdinal);
+    }
+
+    public void setRatingString(CompanyRating ratingString) {
+        this.ratingString = ratingString == null ? null : ratingString.getId();
+    }
+
+    public CompanyRating getRatingString() {
+        return ratingString == null ? null : CompanyRating.fromId(ratingString);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getOfficialName() {
+        return officialName;
+    }
+
+    public void setOfficialName(String officialName) {
+        this.officialName = officialName;
+    }
+
+    public Employee getCeo() {
+        return ceo;
+    }
+
+    public void setCeo(Employee ceo) {
+        this.ceo = ceo;
+    }
+
+    public List<Department> getDepartments() {
+        return departments;
+    }
+
+    public void setDepartments(List<Department> departments) {
+        this.departments = departments;
+    }
 }

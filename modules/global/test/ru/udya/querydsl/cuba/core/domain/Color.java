@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 /**
  * The Enum Color.
  */
+@SuppressWarnings("DataModelLocalizedMessageMissing")
 public enum Color implements EnumClass<String> {
     BLACK("black"), TABBY("tabby");
 

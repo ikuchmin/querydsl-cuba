@@ -13,13 +13,18 @@
  */
 package ru.udya.querydsl.cuba.core.domain;
 
+import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Metadata;
+
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -29,23 +34,86 @@ import java.util.HashSet;
 /**
  * The Class Employee.
  */
-@Entity
-@Table(name = "employee_")
-public class Employee {
+@Table(name = "QUERYDSL_CUBA_EMPLOYEE")
+@Entity(name = "querydslcuba_Employee")
+public class Employee extends StandardEntity {
+
+    private static final long serialVersionUID = - 607899760147703707L;
+
+    @Column(name = "INT_ID")
+    protected Integer intId;
+
+    @Column(name = "FIRST_NAME")
+    protected String firstName;
+
+    @Column(name = "LAST_NAME")
+    protected String lastName;
+
     @ManyToOne
-    public Company company;
+    @JoinColumn(name = "COMPANY_ID")
+    protected Company company;
 
     @OneToOne
-    public User user;
-
-    public String firstName, lastName;
-
-    @Id
-    public int id;
+    @JoinColumn(name = "USER_ID")
+    protected User user;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "jobfunction")
     @ElementCollection(fetch = FetchType.EAGER)
-    public Collection<JobFunction> jobFunctions = new HashSet<JobFunction>();
+    @CollectionTable(name = "QUERYDSL_CUBA_EMPLOYEE_JOBFUNCTIONS",
+            joinColumns = @JoinColumn(name = "employee_id"))
+    protected Collection<JobFunction> jobFunctions = new HashSet<>();
 
+    public static Employee employee() {
+        Metadata metadata = AppBeans.get(Metadata.class);
+        return metadata.create(Employee.class);
+    }
+
+    public Integer getIntId() {
+        return intId;
+    }
+
+    public void setIntId(Integer intId) {
+        this.intId = intId;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Collection<JobFunction> getJobFunctions() {
+        return jobFunctions;
+    }
+
+    public void setJobFunctions(Collection<JobFunction> jobFunctions) {
+        this.jobFunctions = jobFunctions;
+    }
 }

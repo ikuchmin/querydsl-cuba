@@ -13,9 +13,11 @@
  */
 package ru.udya.querydsl.cuba.core.domain;
 
+import com.haulmont.cuba.core.entity.StandardEntity;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Index;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -24,17 +26,17 @@ import java.util.List;
 /**
  * The Class Department.
  */
-@Entity
-@Table(name = "department_")
-public class Department {
+@Entity(name = "querydslcuba_department")
+@Table(name = "QUERYDSL_CUBA_DEPARTMENT")
+public class Department extends StandardEntity {
+
+    @Column(name = "NAME")
+    String name;
+
     @ManyToOne
+    @JoinColumn(name = "COMPANY_ID")
     Company company;
 
     @OneToMany
     List<Employee> employees;
-
-    @Id
-    int id;
-
-    String name;
 }

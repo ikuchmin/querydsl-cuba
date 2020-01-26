@@ -4,18 +4,18 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.haulmont.cuba.core.TransactionalDataManager;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.entity.KeyValueEntity;
-import com.haulmont.cuba.core.global.DataLoadContext;
-import com.haulmont.cuba.core.global.DataLoadContextQuery;
 import com.haulmont.cuba.core.global.FluentValueLoader;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.ValueLoadContext;
+import com.haulmont.cuba.core.global.Metadata;
 import com.mysema.commons.lang.CloseableIterator;
 import com.querydsl.core.DefaultQueryMetadata;
 import com.querydsl.core.NonUniqueResultException;
 import com.querydsl.core.QueryMetadata;
 import com.querydsl.core.QueryModifiers;
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.types.ParamExpression;
+import com.querydsl.core.types.ParamNotSetException;
+import com.querydsl.core.types.dsl.Param;
 import com.querydsl.jpa.EclipseLinkTemplates;
 import com.querydsl.jpa.JPQLTemplates;
 import com.querydsl.jpa.QueryHandler;
@@ -26,11 +26,6 @@ import org.slf4j.MDC;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 
 public abstract class AbstractCubaQuery<T, Q extends AbstractCubaQuery<T, Q>> extends CubaQueryBase<T, Q> {
 
@@ -42,176 +37,82 @@ public abstract class AbstractCubaQuery<T, Q extends AbstractCubaQuery<T, Q>> ex
 
     protected final TransactionalDataManager txDm;
 
+    protected final Metadata metadata;
+
     protected final QueryHandler queryHandler;
 
-    public AbstractCubaQuery(TransactionalDataManager dm) {
-        this(dm, EclipseLinkTemplates.DEFAULT, new DefaultQueryMetadata());
+    public AbstractCubaQuery(TransactionalDataManager dm, Metadata metadata) {
+        this(dm, metadata, EclipseLinkTemplates.DEFAULT, new DefaultQueryMetadata());
     }
 
-    public AbstractCubaQuery(TransactionalDataManager dm, JPQLTemplates templates, QueryMetadata metadata) {
-        super(metadata, templates);
+    public AbstractCubaQuery(TransactionalDataManager dm, Metadata metadata, JPQLTemplates templates, QueryMetadata queryMetadata) {
+        super(queryMetadata, templates);
         this.queryHandler = templates.getQueryHandler();
         this.txDm = dm;
+        this.metadata = metadata;
     }
 
     @Override
     public long fetchCount() {
         try {
-            ValueLoadContext loadContext = createValuesLoadContext(null, true, asList("count"));
-            List<KeyValueEntity> loadedValues = txDm.loadValues(loadContext);
-
-            KeyValueEntity countKv = loadedValues.get(0);
-            return (Long) countKv.getValue("count");
-
+            return internalFetchCount();
         } finally {
             reset();
         }
     }
 
-    protected LoadContext<?> createEntityLoadContext(@Nullable QueryModifiers modifiers) {
-
-        @SuppressWarnings({"unchecked", "rawtypes"})
-        Class<? extends Entity> entityClass =
-                (Class<? extends Entity>) getMetadata().getProjection().getType();
-
-        return createLoadContext(modifiers, false,
-                () -> LoadContext.create(entityClass), LoadContext::createQuery);
+    protected long internalFetchCount() {
+        return new CountQueryFlow().applyFlow().one();
     }
 
-
-    protected ValueLoadContext createValuesLoadContext(@Nullable QueryModifiers modifiers, boolean forCount, List<String> properties) {
-
-
-        ValueLoadContext valueLoadContext = createLoadContext(modifiers, forCount,
-                ValueLoadContext::create, ValueLoadContext::createQuery);
-
-        properties.forEach(valueLoadContext::addProperty);
-
-        return valueLoadContext;
-    }
-
-    protected <DLC extends DataLoadContext> DLC createLoadContext(@Nullable QueryModifiers modifiers, boolean forCount,
-                                                Supplier<DLC> dlcSupplier,
-                                                Function<String, DataLoadContextQuery> dlcQuerySupplier) {
-
-        CubaJpqlSerializer serializer = serialize(forCount);
-        String queryString = serializer.toString();
-        logQuery(queryString, serializer.getConstantToLabel());
-
-        DataLoadContextQuery query = dlcQuerySupplier.apply(queryString);
-
-        CubaUtil.setConstants(query, serializer.getConstantToLabel(), getMetadata().getParams()); // !!!
-
-        if (modifiers != null && modifiers.isRestricting()) {
-            Integer limit = modifiers.getLimitAsInteger();
-            Integer offset = modifiers.getOffsetAsInteger();
-            if (limit != null) {
-                query.setMaxResults(limit);
-            }
-            if (offset != null) {
-                query.setFirstResult(offset);
-            }
-        }
-
-        DLC dataLoadContext = dlcSupplier.get();
-
-        if (dataLoadContext instanceof LoadContext) {
-            LoadContext<?> loadContext = (LoadContext<?>) dataLoadContext;
-
-            loadContext.setQuery((LoadContext.Query) query);
-
-            for (Map.Entry<String, Object> entry : hints.entries()) {
-                loadContext.setHint(entry.getKey(), entry.getValue());
-            }
-        }
-
-        if (dataLoadContext instanceof ValueLoadContext) {
-            ValueLoadContext valueLoadContext = (ValueLoadContext) dataLoadContext;
-
-            valueLoadContext.setQuery((ValueLoadContext.Query) query);
-        }
-
-        return dataLoadContext;
-    }
-
-    /**
-     * Transforms results using FactoryExpression if ResultTransformer can't be used
-     *
-     * @param loadContext loadContext
-     * @return results
-     */
-    private List<?> getResultList(LoadContext<?> loadContext) {
-        return txDm.loadList(loadContext);
-    }
-
-    /**
-     * Transforms results using FactoryExpression if ResultTransformer can't be used
-     *
-     * @param loadContext loadContext
-     * @return single result
-     */
-    @Nullable
-    private Object getSingleResult(LoadContext<?> loadContext) {
-        return txDm.load(loadContext);
-    }
-
-    protected Class<?> getQueryResultType() {
-        return getMetadata().getProjection().getType();
+    @SuppressWarnings("unchecked")
+    protected <CT> Class<CT> getQueryResultType() {
+        return (Class<CT>) getMetadata().getProjection().getType();
     }
 
     @Override
     public CloseableIterator<T> iterate() {
-
-        throw new UnsupportedOperationException("Implement");
-//        try {
-//            Query query = createLoadContext();
-//            return queryHandler.iterate(query, projection);
-//        } finally {
-//            reset();
-//        }
+        throw new UnsupportedOperationException("CUBA.platform doesn't support Cursors");
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public List<T> fetch() {
 
-        Class<?> queryResultType = getQueryResultType();
-
         try {
-            if (Entity.class.isAssignableFrom(queryResultType)) {
-                LoadContext<?> loadContext =
-                        createEntityLoadContext(getMetadata().getModifiers());
-
-                return (List<T>) txDm.loadList(loadContext);
-
-            } else {
-                ValueLoadContext loadContext = createValuesLoadContext(null, false, emptyList());
-
-                FluentValueLoader<Long> objectFluentValueLoader = txDm.loadValue(loadContext.getQuery().getQueryString(), Long.class);
-                Map<String, Object> parameters = loadContext.getQuery().getParameters();
-                parameters.forEach(objectFluentValueLoader::parameter);
-
-                List<Long> list = objectFluentValueLoader.list();
-                return emptyList();
-            }
-
+            return internalFetch();
         } finally {
             reset();
+        }
+    }
+
+    private List<T> internalFetch() {
+        Class<?> queryResultType = getQueryResultType();
+
+        if (Entity.class.isAssignableFrom(queryResultType)) {
+
+            LoadContext<Entity> loadContext = new EntityQueryFlow<>()
+                    .modifiers(getMetadata().getModifiers()).applyFlow();
+
+            return (List<T>) txDm.loadList(loadContext);
+
+        } else {
+
+            return new OneColumnQueryFlow<T>().modifiers(getMetadata().getModifiers()).applyFlow().list();
         }
     }
 
     @Override
     public QueryResults<T> fetchResults() {
         try {
-            //LoadContext<?> countQuery = createLoadContext(null, true);
-            long total = 10; //(Long) txDm.lo(countQuery, Long.class);
+            long total = internalFetchCount();
 
             if (total > 0) {
-                QueryModifiers modifiers = getMetadata().getModifiers();
-                LoadContext<?> query = createEntityLoadContext(modifiers);
-                @SuppressWarnings("unchecked")
-                List<T> list = (List<T>) getResultList(query);
-                return new QueryResults<T>(list, modifiers, total);
+                List<T> list = internalFetch();
+
+                return new QueryResults<>(list,
+                        getMetadata().getModifiers(), total);
+
             } else {
                 return QueryResults.emptyResults();
             }
@@ -244,11 +145,22 @@ public abstract class AbstractCubaQuery<T, Q extends AbstractCubaQuery<T, Q>> ex
     @SuppressWarnings("unchecked")
     @Override
     public T fetchOne() {
-        try {
-            LoadContext<?> loadContext =
-                    createEntityLoadContext(getMetadata().getModifiers());
+        Class<?> queryResultType = getQueryResultType();
 
-            return (T) getSingleResult(loadContext);
+        try {
+            if (Entity.class.isAssignableFrom(queryResultType)) {
+
+                LoadContext<Entity> loadContext = new EntityQueryFlow<>()
+                        .modifiers(getMetadata().getModifiers()).applyFlow();
+
+                return (T) txDm.load(loadContext);
+
+            } else {
+
+                return new OneColumnQueryFlow<T>().applyFlow()
+                        .optional().orElse(null);
+            }
+
         } catch (javax.persistence.NoResultException e) {
             logger.trace(e.getMessage(),e);
             return null;
@@ -267,7 +179,7 @@ public abstract class AbstractCubaQuery<T, Q extends AbstractCubaQuery<T, Q>> ex
 
     @Override
     protected CubaJpqlSerializer createSerializer() {
-        return new CubaJpqlSerializer(getTemplates(), txDm);
+        return new CubaJpqlSerializer(getTemplates(), txDm, metadata);
     }
 
     protected void clone(Q query) {
@@ -300,5 +212,199 @@ public abstract class AbstractCubaQuery<T, Q extends AbstractCubaQuery<T, Q>> ex
     @Override
     public Q clone() {
         return clone(txDm, getTemplates());
+    }
+
+    public interface CommonQueryFlow<Q, F extends CommonQueryFlow<Q, F>> {
+
+        Q createQuery();
+
+        Q applyParameters(Q query);
+
+        Q applyModifiers(Q query);
+
+        Q applyHints(Q query);
+
+        default Q applyFlow() {
+            Q q = createQuery();
+            Q qWithParams = applyParameters(q);
+            Q qWithParamsAndModifiers = applyModifiers(qWithParams);
+            return applyHints(qWithParamsAndModifiers);
+        }
+    }
+
+    public abstract class AbstractFluentValueLoaderQueryFlow<FT, F extends AbstractFluentValueLoaderQueryFlow<FT, F>>
+            implements CommonQueryFlow<FluentValueLoader<FT>, F> {
+
+        protected QueryModifiers queryModifiers = QueryModifiers.EMPTY;
+        protected CubaJpqlSerializer serializer;
+
+        public F modifiers(QueryModifiers modifiers) {
+            this.queryModifiers = modifiers;
+
+            return (F) this;
+        }
+
+        @Override
+        public FluentValueLoader<FT> createQuery() {
+            serializer = serialize(false);
+            String queryString = serializer.toString();
+
+            return txDm.loadValue(queryString, getQueryResultType());
+        }
+
+        @Override
+        public FluentValueLoader<FT> applyParameters(FluentValueLoader<FT> query) {
+
+            Map<Object, String> constants = serializer.getConstantToLabel();
+            Map<ParamExpression<?>, Object> params = getMetadata().getParams();
+
+            for (Map.Entry<Object, String> entry : constants.entrySet()) {
+
+                String key = entry.getValue();
+
+                Object val = resolveValByParams(entry.getKey(), params);
+
+                query.parameter(CubaJpqlSerializer.QUERY_PARAM_HOLDER + key, val);
+            }
+
+            return query;
+        }
+
+        @Override
+        public FluentValueLoader<FT> applyModifiers(FluentValueLoader<FT> query) {
+            if (queryModifiers != null && queryModifiers.isRestricting()) {
+                Integer limit = queryModifiers.getLimitAsInteger();
+                Integer offset = queryModifiers.getOffsetAsInteger();
+                if (limit != null) {
+                    query.maxResults(limit);
+                }
+                if (offset != null) {
+                    query.firstResult(offset);
+                }
+            }
+
+            return query;
+        }
+
+        @Override
+        public FluentValueLoader<FT> applyHints(FluentValueLoader<FT> query) {
+            return query;
+        }
+    }
+
+    public class CountQueryFlow extends AbstractFluentValueLoaderQueryFlow<Long, CountQueryFlow> {
+
+        @Override
+        public FluentValueLoader<Long> createQuery() {
+            serializer = serialize(true);
+            String queryString = serializer.toString();
+
+            return txDm.loadValue(queryString, Long.class);
+        }
+
+
+        @Override
+        public FluentValueLoader<Long> applyModifiers(FluentValueLoader<Long> query) {
+            return query;
+        }
+
+        @Override
+        public FluentValueLoader<Long> applyHints(FluentValueLoader<Long> query) {
+            return query;
+        }
+    }
+
+    public class OneColumnQueryFlow<FT> extends AbstractFluentValueLoaderQueryFlow<FT, OneColumnQueryFlow<FT>> {}
+
+    public abstract class AbstractLoadContextQueryFlow<E extends Entity, F extends AbstractLoadContextQueryFlow<E, F>>
+            implements CommonQueryFlow<LoadContext<E>, F> {
+
+        protected QueryModifiers queryModifiers = QueryModifiers.EMPTY;
+        protected CubaJpqlSerializer serializer;
+
+        public F modifiers(QueryModifiers modifiers) {
+            this.queryModifiers = modifiers;
+
+            return (F) this;
+        }
+
+        @Override
+        public LoadContext<E> createQuery() {
+            serializer = serialize(false);
+            String queryString = serializer.toString();
+
+            LoadContext<E> loadContext = LoadContext.create(getQueryResultType());
+            loadContext.setQueryString(queryString);
+
+            return loadContext;
+        }
+
+        @Override
+        public LoadContext<E> applyParameters(LoadContext<E> loadContext) {
+
+            Map<Object, String> constants = serializer.getConstantToLabel();
+            Map<ParamExpression<?>, Object> params = getMetadata().getParams();
+
+            LoadContext.Query query = loadContext.getQuery();
+
+            for (Map.Entry<Object, String> entry : constants.entrySet()) {
+
+                String key = entry.getValue();
+
+                Object val = resolveValByParams(entry.getKey(), params);
+
+                query.setParameter(CubaJpqlSerializer.QUERY_PARAM_HOLDER + key, val);
+            }
+
+            return loadContext;
+        }
+
+        @Override
+        public LoadContext<E> applyModifiers(LoadContext<E> loadContext) {
+
+            LoadContext.Query query = loadContext.getQuery();
+            if (queryModifiers != null && queryModifiers.isRestricting()) {
+                Integer limit = queryModifiers.getLimitAsInteger();
+                Integer offset = queryModifiers.getOffsetAsInteger();
+                if (limit != null) {
+                    query.setMaxResults(limit);
+                }
+                if (offset != null) {
+                    query.setFirstResult(offset);
+                }
+            }
+
+            return loadContext;
+        }
+
+        @Override
+        public LoadContext<E> applyHints(LoadContext<E> loadContext) {
+
+            for (Map.Entry<String, Object> entry : hints.entries()) {
+                loadContext.setHint(entry.getKey(), entry.getValue());
+            }
+
+            return loadContext;
+        }
+    }
+
+
+    public class EntityQueryFlow<E extends Entity>
+            extends AbstractLoadContextQueryFlow<E, EntityQueryFlow<E>> {
+
+    }
+
+
+    private Object resolveValByParams(Object val, Map<ParamExpression<?>, Object> params) {
+
+        Object resolved = val;
+        if (val instanceof Param) {
+            resolved = params.get(val);
+            if (resolved == null) {
+                throw new ParamNotSetException((Param<?>) val);
+            }
+        }
+
+        return resolved;
     }
 }

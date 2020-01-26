@@ -13,22 +13,64 @@
  */
 package ru.udya.querydsl.cuba.core.domain;
 
+import com.haulmont.cuba.core.entity.StandardEntity;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
  * The Class User.
  */
-@Entity
-@Table(name = "user_")
-public class User {
+@SuppressWarnings("DataModelLocalizedMessageMissing")
+@Entity(name = "querydslcuba_user")
+@Table(name = "QUERYDSL_CUBA_USER")
+public class User extends StandardEntity {
+
+    @Column(name = "USER_NAME")
+    String userName;
+
+    @Column(name = "FIRST_NAME")
+    String firstName;
+
+    @Column(name = "LAST_NAME")
+    String lastName;
+
     @ManyToOne
+    @JoinColumn(name = "COMPANY_ID")
     Company company;
 
-    @Id
-    long id;
+    public String getUserName() {
+        return userName;
+    }
 
-    String userName, firstName, lastName;
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
 }

@@ -19,8 +19,9 @@ import javax.persistence.Entity;
 /**
  * The Class DomesticCat.
  */
-@Entity
+@Entity(name = "querydslcuba_DomesticCat")
 @DiscriminatorValue("DC")
 public class DomesticCat extends Cat {
 
+    private static final long serialVersionUID = - 6278645641911155198L;
 }

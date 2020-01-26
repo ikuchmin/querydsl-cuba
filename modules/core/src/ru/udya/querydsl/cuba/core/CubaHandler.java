@@ -7,7 +7,6 @@ import com.querydsl.jpa.QueryHandler;
 import com.querydsl.jpa.TransformingIterator;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.ResultSetType;
-import org.eclipse.persistence.jpa.JpaQuery;
 import org.eclipse.persistence.queries.Cursor;
 
 import javax.persistence.Query;
@@ -37,11 +36,11 @@ public class CubaHandler implements QueryHandler {
     public <T> CloseableIterator<T> iterate(Query query, FactoryExpression<?> projection) {
         Iterator<T> iterator = null;
         Closeable closeable = null;
-        if (query instanceof JpaQuery) {
-            JpaQuery<T> elQuery = (JpaQuery<T>) query;
+        if (query instanceof CubaQuery) {
+            CubaQuery<T> elQuery = (CubaQuery<T>) query;
             elQuery.setHint(QueryHints.RESULT_SET_TYPE, ResultSetType.ForwardOnly);
             elQuery.setHint(QueryHints.SCROLLABLE_CURSOR, true);
-            final Cursor cursor = elQuery.getResultCursor();
+            final Cursor cursor = null;// = elQuery.getResultCursor();
             closeable = new Closeable() {
                 @Override
                 public void close() throws IOException {

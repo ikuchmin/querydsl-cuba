@@ -3,6 +3,8 @@ package ru.udya.querydsl.cuba.core;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.haulmont.cuba.core.TransactionalDataManager;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
+import com.haulmont.cuba.core.global.Metadata;
 import com.querydsl.core.JoinExpression;
 import com.querydsl.core.JoinType;
 import com.querydsl.core.QueryMetadata;
@@ -33,9 +35,7 @@ import com.querydsl.jpa.JPQLTemplates;
 
 import javax.annotation.Nullable;
 import javax.persistence.Entity;
-import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.SingularAttribute;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,6 +44,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class CubaJpqlSerializer extends SerializerBase<CubaJpqlSerializer> {
 
@@ -92,6 +93,9 @@ public class CubaJpqlSerializer extends SerializerBase<CubaJpqlSerializer> {
 
     private final TransactionalDataManager txDm;
 
+    // Don't delete this, it will be needed to resolve common case into visitPathInCollection
+    private final Metadata metadata;
+
     private boolean inProjection = false;
 
     private boolean inCaseOperation = false;
@@ -107,14 +111,13 @@ public class CubaJpqlSerializer extends SerializerBase<CubaJpqlSerializer> {
 
     private boolean wrapElements = false;
 
-    public CubaJpqlSerializer(JPQLTemplates templates) {
-        this(templates, null);
-    }
-
-    public CubaJpqlSerializer(JPQLTemplates templates, TransactionalDataManager txDm) {
+    public CubaJpqlSerializer(JPQLTemplates templates,
+                              TransactionalDataManager txDm,
+                              Metadata metadata) {
         super(templates);
         this.templates = templates;
         this.txDm = txDm;
+        this.metadata = metadata;
     }
 
     private String getEntityName(Class<?> clazz) {
@@ -352,7 +355,7 @@ public class CubaJpqlSerializer extends SerializerBase<CubaJpqlSerializer> {
 
     @Override
     public Void visit(ParamExpression<?> param, Void context) {
-        append("?");
+        append(":" + QUERY_PARAM_HOLDER);
         if (!getConstantToLabel().containsKey(param)) {
             final String paramLabel = String.valueOf(getConstantToLabel().size() + 1);
             getConstantToLabel().put(param, paramLabel);
@@ -470,24 +473,31 @@ public class CubaJpqlSerializer extends SerializerBase<CubaJpqlSerializer> {
             operator = operator == Ops.IN ? Ops.EQ : Ops.NE;
             args = ImmutableList.of(Expressions.ONE, Expressions.TWO);
         } else if (txDm != null && !templates.isPathInEntitiesSupported() && args.get(0).getType().isAnnotationPresent(Entity.class)) {
-            final Metamodel metamodel = null ; //txDm.getMetamodel();
-            final PersistenceUnitUtil util = null; //txDm.getEntityManagerFactory().getPersistenceUnitUtil();
-            final EntityType<?> entityType = metamodel.entity(args.get(0).getType());
-            if (entityType.hasSingleIdAttribute()) {
-                SingularAttribute<?,?> id = getIdProperty(entityType);
-                // turn lhs into id path
-                lhs = ExpressionUtils.path(id.getJavaType(), lhs, id.getName());
+
+            Set<Object> ids = new HashSet<Object>();
+
+            Class<?> argType = args.get(0).getType();
+            if (isClassUsualForCuba(argType)) {
+                lhs = ExpressionUtils.path(UUID.class, lhs, "id");
+
                 // turn rhs into id collection
-                Set<Object> ids = new HashSet<Object>();
                 for (Object entity : rhs.getConstant()) {
-                    ids.add(util.getIdentifier(entity));
+                    ids.add(((BaseUuidEntity) entity).getId());
                 }
-                rhs = ConstantImpl.create(ids);
-                args = ImmutableList.of(lhs, rhs);
+
+            } else {
+                // do something with metadata to find id
             }
+
+            rhs = ConstantImpl.create(ids);
+            args = ImmutableList.of(lhs, rhs);
         }
 
         super.visitOperation(type, operator, args);
+    }
+
+    private boolean isClassUsualForCuba(Class<?> clazz) {
+        return BaseUuidEntity.class.isAssignableFrom(clazz);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

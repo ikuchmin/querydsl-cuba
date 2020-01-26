@@ -118,7 +118,7 @@ configure(coreModule) {
         compile group: 'com.querydsl', name: 'querydsl-jpa', version: '4.1.4'
 
         testCompile globalModule.sourceSets.test.output
-        testCompile group: 'joda-time', name: 'joda-time', version: '1.6'
+        //testCompile group: 'joda-time', name: 'joda-time', version: '1.6'
         testCompile group: 'org.hamcrest', name: 'hamcrest-library', version: '1.3'
     }
 
