@@ -4,9 +4,11 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.haulmont.cuba.core.TransactionalDataManager;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.FluentValueLoader;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.core.global.View;
 import com.mysema.commons.lang.CloseableIterator;
 import com.querydsl.core.DefaultQueryMetadata;
 import com.querydsl.core.NonUniqueResultException;
@@ -41,8 +43,20 @@ public abstract class AbstractCubaQuery<T, Q extends AbstractCubaQuery<T, Q>> ex
 
     protected final QueryHandler queryHandler;
 
+    public AbstractCubaQuery() {
+        this(AppBeans.get(TransactionalDataManager.class),
+                AppBeans.get(Metadata.class));
+    }
+
     public AbstractCubaQuery(TransactionalDataManager dm, Metadata metadata) {
         this(dm, metadata, EclipseLinkTemplates.DEFAULT, new DefaultQueryMetadata());
+    }
+
+    public AbstractCubaQuery(JPQLTemplates templates, QueryMetadata queryMetadata) {
+        super(queryMetadata, templates);
+        this.queryHandler = templates.getQueryHandler();
+        this.txDm = AppBeans.get(TransactionalDataManager.class);
+        this.metadata = AppBeans.get(Metadata.class);
     }
 
     public AbstractCubaQuery(TransactionalDataManager dm, Metadata metadata, JPQLTemplates templates, QueryMetadata queryMetadata) {
@@ -78,21 +92,35 @@ public abstract class AbstractCubaQuery<T, Q extends AbstractCubaQuery<T, Q>> ex
     @Override
     @SuppressWarnings("unchecked")
     public List<T> fetch() {
+         return internalFetch(View.LOCAL);
+    }
+
+    public List<T> fetch(View view) {
+         return internalFetch(view);
+    }
+
+    public List<T> fetch(String view) {
+         return internalFetch(view);
+    }
+
+    private List<T> internalFetch(Object view) {
 
         try {
-            return internalFetch();
+            return internalFetchImplementation(ViewParam.of(view));
         } finally {
             reset();
         }
     }
 
-    private List<T> internalFetch() {
+    private List<T> internalFetchImplementation(ViewParam view) {
         Class<?> queryResultType = getQueryResultType();
 
         if (Entity.class.isAssignableFrom(queryResultType)) {
 
             LoadContext<Entity> loadContext = new EntityQueryFlow<>()
-                    .modifiers(getMetadata().getModifiers()).applyFlow();
+                    .modifiers(getMetadata().getModifiers())
+                    .view(view)
+                    .applyFlow();
 
             return (List<T>) txDm.loadList(loadContext);
 
@@ -104,22 +132,39 @@ public abstract class AbstractCubaQuery<T, Q extends AbstractCubaQuery<T, Q>> ex
 
     @Override
     public QueryResults<T> fetchResults() {
+        return internalFetchResults(View.LOCAL);
+    }
+
+    public QueryResults<T> fetchResults(View view) {
+        return internalFetchResults(view);
+    }
+
+    public QueryResults<T> fetchResults(String view) {
+       return internalFetchResults(view);
+    }
+
+    public QueryResults<T> internalFetchResults(Object view) {
         try {
-            long total = internalFetchCount();
-
-            if (total > 0) {
-                List<T> list = internalFetch();
-
-                return new QueryResults<>(list,
-                        getMetadata().getModifiers(), total);
-
-            } else {
-                return QueryResults.emptyResults();
-            }
+            return internalFetchResultImplementation(ViewParam.of(view));
         } finally {
             reset();
         }
 
+    }
+
+    private QueryResults<T> internalFetchResultImplementation(ViewParam viewParam) {
+
+        long total = internalFetchCount();
+
+        if (total > 0) {
+            List<T> list = internalFetch(viewParam);
+
+            return new QueryResults<>(list,
+                    getMetadata().getModifiers(), total);
+
+        } else {
+            return QueryResults.emptyResults();
+        }
     }
 
     protected void logQuery(String queryString, Map<Object, String> parameters) {
@@ -142,24 +187,26 @@ public abstract class AbstractCubaQuery<T, Q extends AbstractCubaQuery<T, Q>> ex
     }
 
     @Nullable
-    @SuppressWarnings("unchecked")
     @Override
     public T fetchOne() {
-        Class<?> queryResultType = getQueryResultType();
+        return internalFetchOne(View.LOCAL);
+    }
 
+    @Nullable
+    public T fetchOne(String view) {
+        return internalFetchOne(view);
+    }
+
+    @Nullable
+    public T fetchOne(View view) {
+        return internalFetchOne(view);
+    }
+
+    @Nullable
+    public T internalFetchOne(Object view) {
         try {
-            if (Entity.class.isAssignableFrom(queryResultType)) {
 
-                LoadContext<Entity> loadContext = new EntityQueryFlow<>()
-                        .modifiers(getMetadata().getModifiers()).applyFlow();
-
-                return (T) txDm.load(loadContext);
-
-            } else {
-
-                return new OneColumnQueryFlow<T>().applyFlow()
-                        .optional().orElse(null);
-            }
+            return internalFetchOneImplementation(ViewParam.of(view));
 
         } catch (javax.persistence.NoResultException e) {
             logger.trace(e.getMessage(),e);
@@ -168,6 +215,28 @@ public abstract class AbstractCubaQuery<T, Q extends AbstractCubaQuery<T, Q>> ex
             throw new NonUniqueResultException();
         } finally {
             reset();
+        }
+
+    }
+
+    @Nullable
+    @SuppressWarnings("unchecked")
+    private T internalFetchOneImplementation(ViewParam viewParam) {
+        Class<?> queryResultType = getQueryResultType();
+
+        if (Entity.class.isAssignableFrom(queryResultType)) {
+
+            LoadContext<Entity> loadContext = new EntityQueryFlow<>()
+                    .modifiers(getMetadata().getModifiers())
+                    .view(viewParam)
+                    .applyFlow();
+
+            return (T) txDm.load(loadContext);
+
+        } else {
+
+            return new OneColumnQueryFlow<T>().applyFlow()
+                    .optional().orElse(null);
         }
     }
 
@@ -320,6 +389,8 @@ public abstract class AbstractCubaQuery<T, Q extends AbstractCubaQuery<T, Q>> ex
             implements CommonQueryFlow<LoadContext<E>, F> {
 
         protected QueryModifiers queryModifiers = QueryModifiers.EMPTY;
+        protected ViewParam viewParam;
+
         protected CubaJpqlSerializer serializer;
 
         public F modifiers(QueryModifiers modifiers) {
@@ -335,6 +406,16 @@ public abstract class AbstractCubaQuery<T, Q extends AbstractCubaQuery<T, Q>> ex
 
             LoadContext<E> loadContext = LoadContext.create(getQueryResultType());
             loadContext.setQueryString(queryString);
+
+            // apply view
+            if (viewParam != null && viewParam.getViewName() != null) {
+                loadContext.setView(viewParam.getViewName());
+            }
+
+            // if both views are filled in ViewParam than object View will set
+            if (viewParam != null && viewParam.getView() != null) {
+                loadContext.setView(viewParam.getView());
+            }
 
             return loadContext;
         }
@@ -386,6 +467,12 @@ public abstract class AbstractCubaQuery<T, Q extends AbstractCubaQuery<T, Q>> ex
 
             return loadContext;
         }
+
+        public F view(ViewParam view) {
+            this.viewParam = view;
+
+            return (F) this;
+        }
     }
 
 
@@ -406,5 +493,40 @@ public abstract class AbstractCubaQuery<T, Q extends AbstractCubaQuery<T, Q>> ex
         }
 
         return resolved;
+    }
+
+    private static class ViewParam {
+
+        protected String viewName;
+
+        protected View view;
+
+        public ViewParam(String viewName) {
+            this.viewName = viewName;
+        }
+
+        public ViewParam(View view) {
+            this.view = view;
+        }
+
+        public static ViewParam of(Object view) {
+            if (view instanceof String) {
+                return new ViewParam((String) view);
+            }
+
+            if (view instanceof View) {
+                return new ViewParam((View) view);
+            }
+
+            throw new IllegalArgumentException("Library supports only view as String or View");
+        }
+
+        public String getViewName() {
+            return viewName;
+        }
+
+        public View getView() {
+            return view;
+        }
     }
 }

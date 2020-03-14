@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<app-component xmlns="http://schemas.haulmont.com/cuba/app-component.xsd"
+               dependsOn="com.haulmont.cuba">
+
+    <module name="global" blocks="*">
+        <artifact name="querydsl-cuba-global" appJar="true"/>
+
+        <property name="cuba.persistenceConfig" value="+ru/udya/querydsl/cuba/persistence.xml"/>
+        <property name="cuba.metadataConfig" value="+ru/udya/querydsl/cuba/metadata.xml"/>
+        <property name="cuba.viewsConfig" value="+ru/udya/querydsl/cuba/views.xml"/>
+    </module>
+    <module name="core" dependsOn="global" blocks="core">
+        <artifact name="querydsl-cuba-core" appJar="true"/>
+
+        <property name="cuba.springContextConfig" value="+ru/udya/querydsl/cuba/spring.xml"/>
+        <property name="cuba.mainMessagePack" value="+ru.udya.querydsl.cuba.core"/>
+    </module>
+</app-component>

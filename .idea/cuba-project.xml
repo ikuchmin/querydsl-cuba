@@ -36,7 +36,7 @@
     </option>
     <option name="dbArtifacts">
       <map>
-        <entry key="com.haulmont.cuba" value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.haulmont.cuba/cuba-core/7.2-SNAPSHOT/ca2d33beb894c9c9c070cbf82b5fee7729018d5b/cuba-core-7.2-SNAPSHOT-db.zip" />
+        <entry key="com.haulmont.cuba" value="$MAVEN_REPOSITORY$/com/haulmont/cuba/cuba-core/7.2-SNAPSHOT/cuba-core-7.2-SNAPSHOT-db.zip" />
       </map>
     </option>
   </component>

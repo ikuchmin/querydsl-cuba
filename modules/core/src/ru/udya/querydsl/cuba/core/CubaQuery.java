@@ -17,7 +17,7 @@ public class CubaQuery<T> extends AbstractCubaQuery<T, CubaQuery<T>> {
      * The query can be attached via the clone method
      */
     public CubaQuery() {
-        super(null, null, JPQLTemplates.DEFAULT, new DefaultQueryMetadata());
+        super(JPQLTemplates.DEFAULT, new DefaultQueryMetadata());
     }
 
     /**
