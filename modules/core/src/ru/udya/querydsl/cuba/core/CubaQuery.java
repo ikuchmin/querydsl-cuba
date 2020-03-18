@@ -20,14 +20,6 @@ public class CubaQuery<T> extends AbstractCubaQuery<T, CubaQuery<T>> {
     private static final long serialVersionUID = - 9180183730489110259L;
 
     /**
-     * Creates a new detached query
-     * The query can be attached via the clone method
-     */
-    public CubaQuery() {
-        super(JPQLTemplates.DEFAULT, new DefaultQueryMetadata());
-    }
-
-    /**
      * Creates a new EntityManager bound query
      *
      * @param dm entity manager
@@ -69,7 +61,7 @@ public class CubaQuery<T> extends AbstractCubaQuery<T, CubaQuery<T>> {
 
     @Override
     public CubaQuery<T> clone(TransactionalDataManager dataManager, JPQLTemplates templates) {
-        CubaQuery<T> q = new CubaQuery<T>(dataManager, metadata, templates, getMetadata().clone());
+        CubaQuery<T> q = new CubaQuery<>(dataManager, metadata, templates, getMetadata().clone());
         q.clone(this);
         return q;
     }
