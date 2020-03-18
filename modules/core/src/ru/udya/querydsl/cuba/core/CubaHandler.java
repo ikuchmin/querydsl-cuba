@@ -14,6 +14,11 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.Iterator;
 
+/**
+ * {@code CubaHandler} is the {@link QueryHandler} implementation for CUBA.platform
+ *
+ * Based on {@link com.querydsl.jpa.EclipseLinkHandler}
+ */
 public class CubaHandler implements QueryHandler {
 
     @Override

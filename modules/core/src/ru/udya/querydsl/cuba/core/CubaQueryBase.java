@@ -12,6 +12,14 @@ import com.querydsl.jpa.JPAQueryMixin;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.JPQLTemplates;
 
+/**
+ * {@code CubaQueryBase} is a base Query class for JPA queries
+ *
+ * Based on {@link com.querydsl.jpa.JPAQueryBase}
+ *
+ * @param <T> result type
+ * @param <Q> concrete subtype
+ */
 public abstract class CubaQueryBase<T, Q extends CubaQueryBase<T, Q>> extends FetchableSubQueryBase<T, Q> implements JPQLQuery<T> {
 
     private static final long serialVersionUID = 8062566124236044336L;

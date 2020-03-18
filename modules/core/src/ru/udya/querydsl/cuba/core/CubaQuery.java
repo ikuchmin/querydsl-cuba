@@ -8,6 +8,13 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Expression;
 import com.querydsl.jpa.JPQLTemplates;
 
+/**
+ * CUBA.platform specific JPA query interface.  Provides the functionality defined in
+ * {@link javax.persistence.Query} and adds access to the underlying database query for CUBA.platform specific
+ * functionality.
+ *
+ * Based on {@link org.eclipse.persistence.jpa.JpaQuery}
+ */
 public class CubaQuery<T> extends AbstractCubaQuery<T, CubaQuery<T>> {
 
     private static final long serialVersionUID = - 9180183730489110259L;

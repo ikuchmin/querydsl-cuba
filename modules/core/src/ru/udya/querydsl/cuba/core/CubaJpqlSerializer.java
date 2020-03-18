@@ -46,6 +46,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * {@code CubaJpqlSerializer} serializes Querydsl expressions into JPQL syntax.
+ *
+ * Based on {@link com.querydsl.jpa.JPQLSerializer}
+ */
 public class CubaJpqlSerializer extends SerializerBase<CubaJpqlSerializer> {
 
     public static final String QUERY_PARAM_HOLDER = "qdslparam";

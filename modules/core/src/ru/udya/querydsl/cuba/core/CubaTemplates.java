@@ -11,6 +11,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Map;
 
+/**
+ * {@code CubaTemplates} extends {@link JPQLTemplates} with CUBA.platform and EclipseLink specific extensions
+ *
+ * Based on {@link com.querydsl.jpa.EclipseLinkTemplates}
+ */
 public class CubaTemplates extends JPQLTemplates {
 
     private static final QueryHandler QUERY_HANDLER;

@@ -14,6 +14,11 @@ import com.querydsl.jpa.JPQLTemplates;
 import javax.annotation.Nullable;
 import javax.inject.Provider;
 
+/**
+ * Factory class for query and DML clause creation
+ *
+ * Based on {@link com.querydsl.jpa.impl.JPAQueryFactory}
+ */
 public class CubaQueryFactory implements JPQLQueryFactory {
     @Nullable
     private final JPQLTemplates templates;

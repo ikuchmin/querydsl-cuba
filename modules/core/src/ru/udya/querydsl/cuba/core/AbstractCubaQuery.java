@@ -29,6 +29,14 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Abstract base class for CUBA.platform API based implementations of the CubaQuery interface
+ *
+ * Based on {@link com.querydsl.jpa.impl.AbstractJPAQuery}
+ *
+ * @param <T> result type
+ * @param <Q> concrete subtype
+ */
 public abstract class AbstractCubaQuery<T, Q extends AbstractCubaQuery<T, Q>> extends CubaQueryBase<T, Q> {
 
     private static final long serialVersionUID = 5397497620388267860L;
