@@ -16,6 +16,7 @@ buildscript {
     }
     dependencies {
         classpath "com.haulmont.gradle:cuba-plugin:$cubaVersion"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0"
     }
 }
 
@@ -31,8 +32,8 @@ apply(plugin: 'cuba')
 cuba {
     artifact {
         group = 'ru.udya.querydsl.cuba'
-        version = '0.1'
-        isSnapshot = true
+        version = '1.0.0'
+        isSnapshot = false
     }
     tomcat {
         dir = "$project.rootDir/deploy/tomcat"
@@ -49,6 +50,7 @@ configure([globalModule, coreModule]) {
     apply(plugin: 'java')
     apply(plugin: 'maven')
     apply(plugin: 'cuba')
+    apply(plugin: 'com.jfrog.bintray')
 
     sourceSets {
         test {
@@ -69,7 +71,30 @@ configure([globalModule, coreModule]) {
 
     artifacts {
         archives sourceJar
-    } 
+    }
+
+    bintray {
+        user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+        key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+
+        configurations = ['archives']
+
+        publish = true
+        override = false
+
+        pkg {
+            repo = 'querydsl-cuba'
+            name = 'querydsl-cuba'
+            desc = 'QueryDsl CUBA.platform App Component'
+
+            websiteUrl = 'https://github.com/ikuchmin/querydsl-cuba'
+            issueTrackerUrl = 'https://github.com/ikuchmin/querydsl-cuba/issues'
+            vcsUrl = 'https://github.com/ikuchmin/querydsl-cuba.git'
+
+            licenses = ["Apache-2.0"]
+            labels = ['cuba-platform', 'opensource']
+        }
+    }
 }
 
 configure(globalModule) {
@@ -169,4 +194,3 @@ task restart(dependsOn: ['stop', ":${modulePrefix}-core:deploy"], description: '
     }
 }
 restart.finalizedBy start
-
