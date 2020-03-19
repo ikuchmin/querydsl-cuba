@@ -25,7 +25,8 @@
         </option>
         <option name="mavenLocal" value="true" />
         <option name="artifactGroup" value="ru.udya.querydsl.cuba" />
-        <option name="artifactVersion" value="1.0.0" />
+        <option name="artifactVersion" value="1.1.0" />
+        <option name="artifactSnapshot" value="true" />
         <option name="tomcatDir" value="$PROJECT_DIR$/deploy/tomcat" />
         <option name="gradleVersion" value="5.6.4" />
         <option name="dbmsDbType" value="postgres" />
