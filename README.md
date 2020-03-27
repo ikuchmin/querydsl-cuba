@@ -4,14 +4,19 @@
 
 The add-on provides [QueryDSL](http://www.querydsl.com/) integration for CUBA applications. [QueryDSL](http://www.querydsl.com/) enables the construction of unified SQL-like queries for Java. Instead of writing queries, you can use a fluent API.
 
-In comparison to simple strings QueryDSL offers:
-
-* Code completion in IDE.
-* Almost none syntactically invalid queries allowed.
-* Domain types and properties can be referenced safely.
-* Adopts better to refactoring changes in domain types.
-
 See the [demo project](https://github.com/ikuchmin/querydsl-shop), using this add-on.
+
+#### Suggestions in IDE
+
+QueryDSL provides suggestions in your IDE while writing queries in your CUBA application.
+
+![Alt Text](doc/query_dsl_support.gif)
+
+#### Compilation
+
+QueryDSL guarantees that the compiler will check that your JPQL queries are type-safe. It also helps you adopt better to refactoring changes.
+
+
 
 ### Installation
 
@@ -85,16 +90,6 @@ configure(globalModule) {
 2. Assemble the project. This part is needed to generate QueryDSL classes.
 
 Now you can use type-safe queries in your application.
-
-### Suggestions in IDE
-
-QueryDSL provides suggestions in your IDE while writing queries in your CUBA application.
-
-![Alt Text](doc/query_dsl_support.gif)
-
-## Compilation
-
-QueryDSL guarantees that the compiler will check that your JPQL queries are type-safe. It also helps you adopt better to refactoring changes.
 
 ### Example
 
