@@ -19,13 +19,13 @@
             <DependencyModelState>
               <option name="group" value="com.haulmont.cuba" />
               <option name="name" value="cuba-global" />
-              <option name="version" value="7.2-SNAPSHOT" />
+              <option name="version" value="7.2.2" />
             </DependencyModelState>
           </list>
         </option>
         <option name="mavenLocal" value="true" />
         <option name="artifactGroup" value="ru.udya.querydsl.cuba" />
-        <option name="artifactVersion" value="1.1.0" />
+        <option name="artifactVersion" value="1.1" />
         <option name="artifactSnapshot" value="true" />
         <option name="tomcatDir" value="$PROJECT_DIR$/deploy/tomcat" />
         <option name="gradleVersion" value="5.6.4" />
@@ -36,7 +36,7 @@
     </option>
     <option name="dbArtifacts">
       <map>
-        <entry key="com.haulmont.cuba" value="$MAVEN_REPOSITORY$/com/haulmont/cuba/cuba-core/7.2-SNAPSHOT/cuba-core-7.2-SNAPSHOT-db.zip" />
+        <entry key="com.haulmont.cuba" value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.haulmont.cuba/cuba-core/7.2.2/23bf00f3f31ba5625a87ebaa52b23c46966ab9f0/cuba-core-7.2.2-db.zip" />
       </map>
     </option>
   </component>
