@@ -1,6 +1,6 @@
 
 buildscript {
-    ext.cubaVersion = '7.2-SNAPSHOT'
+    ext.cubaVersion = '7.2.2'
     ext.querydslPluginVersion = '1.0.10'
 
     repositories {
