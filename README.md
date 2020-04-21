@@ -14,7 +14,7 @@ QueryDSL provides suggestions in your IDE while writing queries in your CUBA app
 
 #### Compilation
 
-QueryDSL guarantees that the compiler will check that your database queries are type-safe. It also helps you adopt better to refactoring changes.
+QueryDSL guarantees that the compiler will check that your database queries are type-safe. It also helps you adapt better to refactoring changes.
 
 
 
