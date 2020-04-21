@@ -2,7 +2,7 @@
 
 ### Overview
 
-The add-on provides [QueryDSL](http://www.querydsl.com/) integration for CUBA applications. [QueryDSL](http://www.querydsl.com/) enables the construction of unified SQL-like queries for Java. Instead of writing queries, you can use a fluent API.
+The add-on provides [QueryDSL](http://www.querydsl.com/) integration for CUBA applications. [QueryDSL](http://www.querydsl.com/) enables the construction of unified type-safe database queries for Java. Instead of writing queries, you can use a fluent API.
 
 See the [demo project](https://github.com/ikuchmin/querydsl-shop), using this add-on.
 
