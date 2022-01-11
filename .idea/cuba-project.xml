@@ -25,7 +25,7 @@
         </option>
         <option name="mavenLocal" value="true" />
         <option name="artifactGroup" value="ru.udya.querydsl.cuba" />
-        <option name="artifactVersion" value="1.1.0" />
+        <option name="artifactVersion" value="1.2.0" />
         <option name="artifactSnapshot" value="true" />
         <option name="tomcatDir" value="$PROJECT_DIR$/deploy/tomcat" />
         <option name="gradleVersion" value="5.6.4" />
@@ -50,6 +50,6 @@
         <entry key="com.haulmont.cuba" value="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.haulmont.cuba/cuba-core/7.2.2/23bf00f3f31ba5625a87ebaa52b23c46966ab9f0/cuba-core-7.2.2-db.zip" />
       </map>
     </option>
-    <option name="gradleFilesCRC" value="5562158108" />
+    <option name="gradleFilesCRC" value="4023509689" />
   </component>
 </project>

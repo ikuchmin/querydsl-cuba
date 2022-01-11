@@ -8,13 +8,13 @@ public class TypedViewBuilder<T> extends AbstractTypedViewBuilder<T, TypedViewBu
 //    }
 //
 //
-//    public Q fields(Expression<?>... expr) {
+//    public Q properties(Expression<?>... expr) {
 ////        TypedViewBuilder<U> newType = (TypedViewBuilder<U>) this;
 ////        return newType;
 //        return null;
 //    }
 //
-//    public Q fields(Function<T, List<Expression<?>>> expr) {
+//    public Q properties(Function<T, List<Expression<?>>> expr) {
 ////        TypedViewBuilder<U> newType = (TypedViewBuilder<U>) this;
 ////        return newType;
 //        return null;
@@ -25,7 +25,7 @@ public class TypedViewBuilder<T> extends AbstractTypedViewBuilder<T, TypedViewBu
 ////        return newType;
 //        return null;
 //    }
-//    public <P> Q fields(EntityPath<?>... target) {
+//    public <P> Q properties(EntityPath<?>... target) {
 //        return queryMixin.innerJoin(target);
 //    }
 
