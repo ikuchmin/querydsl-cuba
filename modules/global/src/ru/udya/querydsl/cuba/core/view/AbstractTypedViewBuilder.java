@@ -3,10 +3,8 @@ package ru.udya.querydsl.cuba.core.view;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.core.global.ViewBuilder;
-import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.CollectionPathBase;
-import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.core.types.dsl.SimpleExpression;
 
 import java.util.Arrays;
@@ -19,7 +17,7 @@ import static java.util.stream.Collectors.toList;
 
 // todo: add backward compatibility methods (works with basic strings)
 @SuppressWarnings("unchecked")
-public class AbstractTypedViewBuilder<Q extends EntityPath<? extends Entity<?>>, V extends AbstractTypedViewBuilder<Q, V>> {
+public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V extends AbstractTypedViewBuilder<Q, V>> {
 
     private Q viewType;
 
@@ -94,9 +92,9 @@ public class AbstractTypedViewBuilder<Q extends EntityPath<? extends Entity<?>>,
         return (V) this;
     }
 
-    // --- entity methods
+    // --- generic methods for paths like entity, bean and other variants
 
-    public <SP extends EntityPathBase<? extends Entity<?>>> V property(
+    public <SP extends Path<? extends Entity<?>>> V property(
             SP property, Function<SP, List<Path<?>>> properties) {
 
         List<Path<?>> evaluatedProperties = properties.apply(property);
@@ -109,7 +107,7 @@ public class AbstractTypedViewBuilder<Q extends EntityPath<? extends Entity<?>>,
         return (V) this;
     }
 
-    public <SP extends EntityPathBase<? extends Entity<?>>> V property(
+    public <SP extends Path<? extends Entity<?>>> V property(
             SP property, BiConsumer<SP, TypedViewBuilder<SP>> builder) {
 
         viewBuilder().add(resolvePropertyName(property),
@@ -117,6 +115,8 @@ public class AbstractTypedViewBuilder<Q extends EntityPath<? extends Entity<?>>,
 
         return (V) this;
     }
+
+    // --- collection methods
 
     public <E, SP extends SimpleExpression<E>> V property(CollectionPathBase<? extends Collection<E>, E, SP> property,
                                                           Function<SP, List<Path<?>>> properties) {
@@ -132,7 +132,7 @@ public class AbstractTypedViewBuilder<Q extends EntityPath<? extends Entity<?>>,
         return (V) this;
     }
 
-    public <E extends Entity<?>, SP extends SimpleExpression<E> & EntityPath<E>>
+    public <E extends Entity<?>, SP extends SimpleExpression<E> & Path<E>>
     V property(CollectionPathBase<? extends Collection<E>, E, SP> property,
                BiConsumer<SP, TypedViewBuilder<SP>> builder) {
 
@@ -142,9 +142,13 @@ public class AbstractTypedViewBuilder<Q extends EntityPath<? extends Entity<?>>,
         return (V) this;
     }
 
+    // --- build
+
     public View build() {
         return this.viewBuilder.build();
     }
+
+    // --- utils methods
 
     protected ViewBuilder viewBuilder(Q entityPath) {
         if (viewBuilder == null) {

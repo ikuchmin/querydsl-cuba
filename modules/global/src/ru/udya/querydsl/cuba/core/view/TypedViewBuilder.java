@@ -2,9 +2,9 @@ package ru.udya.querydsl.cuba.core.view;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.ViewBuilder;
-import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Path;
 
-public class TypedViewBuilder<Q extends EntityPath<? extends Entity<?>>> extends AbstractTypedViewBuilder<Q, TypedViewBuilder<Q>> {
+public class TypedViewBuilder<Q extends Path<? extends Entity<?>>> extends AbstractTypedViewBuilder<Q, TypedViewBuilder<Q>> {
     public TypedViewBuilder() {
     }
 
