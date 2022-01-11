@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JmixCubaMigrationState">
+    <option name="cubaModel">
+      <CubaModelImpl>
+        <option name="dependencies">
+          <list>
+            <DependencyModelState>
+              <option name="group" value="com.haulmont.cuba" />
+              <option name="name" value="cuba-global" />
+              <option name="version" value="7.2.2" />
+              <option name="configuration" value="appComponent" />
+            </DependencyModelState>
+            <DependencyModelState>
+              <option name="group" value="org.apache.tomcat" />
+              <option name="name" value="tomcat" />
+              <option name="version" value="9.0.27" />
+              <option name="configuration" value="tomcat" />
+            </DependencyModelState>
+            <DependencyModelState>
+              <option name="group" value="com.querydsl" />
+              <option name="name" value="querydsl-jpa" />
+              <option name="version" value="4.1.4" />
+              <option name="configuration" value="compile" />
+            </DependencyModelState>
+            <DependencyModelState>
+              <option name="group" value="com.haulmont.cuba" />
+              <option name="name" value="cuba-core" />
+              <option name="version" value="7.2.2" />
+              <option name="configuration" value="compile" />
+            </DependencyModelState>
+            <DependencyModelState>
+              <option name="group" value="javax.servlet" />
+              <option name="name" value="javax.servlet-api" />
+              <option name="version" value="3.1.0" />
+              <option name="configuration" value="compileOnly" />
+            </DependencyModelState>
+            <DependencyModelState>
+              <option name="group" value="com.haulmont.cuba" />
+              <option name="name" value="cuba-core" />
+              <option name="version" value="7.2.2" />
+              <option name="configuration" value="dbscripts" />
+            </DependencyModelState>
+            <DependencyModelState>
+              <option name="group" value="org.postgresql" />
+              <option name="name" value="postgresql" />
+              <option name="version" value="42.2.9" />
+              <option name="configuration" value="jdbc" />
+            </DependencyModelState>
+            <DependencyModelState>
+              <option name="group" value="junit" />
+              <option name="name" value="junit" />
+              <option name="version" value="4.12" />
+              <option name="configuration" value="testCompile" />
+            </DependencyModelState>
+            <DependencyModelState>
+              <option name="name" value="unspecified" />
+              <option name="configuration" value="testCompile" />
+            </DependencyModelState>
+            <DependencyModelState>
+              <option name="group" value="org.hamcrest" />
+              <option name="name" value="hamcrest-library" />
+              <option name="version" value="1.3" />
+              <option name="configuration" value="testCompile" />
+            </DependencyModelState>
+            <DependencyModelState>
+              <option name="group" value="com.haulmont.cuba" />
+              <option name="name" value="cuba-core-tests" />
+              <option name="version" value="7.2.2" />
+              <option name="configuration" value="testCompile" />
+            </DependencyModelState>
+            <DependencyModelState>
+              <option name="group" value="com.haulmont.cuba" />
+              <option name="name" value="cuba-shared-lib" />
+              <option name="version" value="7.2.2" />
+              <option name="configuration" value="testCompile" />
+            </DependencyModelState>
+            <DependencyModelState>
+              <option name="group" value="org.postgresql" />
+              <option name="name" value="postgresql" />
+              <option name="version" value="42.2.9" />
+              <option name="configuration" value="testRuntime" />
+            </DependencyModelState>
+            <DependencyModelState>
+              <option name="group" value="com.querydsl" />
+              <option name="name" value="querydsl-apt" />
+              <option name="version" value="4.1.4" />
+              <option name="configuration" value="annotationProcessor" />
+            </DependencyModelState>
+            <DependencyModelState>
+              <option name="group" value="com.haulmont.cuba" />
+              <option name="name" value="cuba-global" />
+              <option name="version" value="7.2.2" />
+              <option name="configuration" value="compile" />
+            </DependencyModelState>
+            <DependencyModelState>
+              <option name="group" value="com.querydsl" />
+              <option name="name" value="querydsl-apt" />
+              <option name="version" value="4.1.4" />
+              <option name="configuration" value="testAnnotationProcessor" />
+            </DependencyModelState>
+          </list>
+        </option>
+      </CubaModelImpl>
+    </option>
+  </component>
+</project>
