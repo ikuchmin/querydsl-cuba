@@ -19,6 +19,14 @@ public class TypedViewBuilder<Q extends Path<? extends Entity<?>>> extends Abstr
         super(viewType, viewBuilder);
     }
 
+    /**
+     * Adds property with typed sub-builder
+     *
+     * @param property property
+     * @param builder sub-builder
+     * @param <SP> type of property
+     * @return builder
+     */
     public <SP extends Path<? extends Entity<?>>>
     TypedViewBuilder<Q> property(SP property, BiConsumer<SP, TypedViewBuilder<SP>> builder) {
 
@@ -29,6 +37,8 @@ public class TypedViewBuilder<Q extends Path<? extends Entity<?>>> extends Abstr
     }
 
     /**
+     * Adds property with typed sub-builder and fetch mode
+     *
      * CUBA.platform doesn't support such API. It will be enabled in the future
      */
     @Deprecated
@@ -40,6 +50,15 @@ public class TypedViewBuilder<Q extends Path<? extends Entity<?>>> extends Abstr
     }
 
 
+    /**
+     * Adds collection property with typed sub-builder
+     *
+     * @param property property
+     * @param builder sub-builder
+     * @param <E> entity type
+     * @param <SP> querydsl type of property
+     * @return builder
+     */
     public <E extends Entity<?>, SP extends SimpleExpression<E> & Path<E>>
     TypedViewBuilder<Q> property(CollectionPathBase<? extends Collection<E>, E, SP> property,
                BiConsumer<SP, TypedViewBuilder<SP>> builder) {
@@ -51,6 +70,8 @@ public class TypedViewBuilder<Q extends Path<? extends Entity<?>>> extends Abstr
     }
 
     /**
+     * Adds collection property with typed sub-builder and fetch mode
+     *
      * CUBA.platform doesn't support such API. It will be enabled in the future
      */
     @Deprecated

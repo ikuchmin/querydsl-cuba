@@ -31,6 +31,12 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
         this.viewBuilder = viewBuilder;
     }
 
+    /**
+     * Initializes Builder with base type
+     *
+     * @param viewType base type
+     * @return builder
+     */
     public V view(Q viewType) {
         this.viewBuilder = viewBuilder(viewType);
         this.viewType = viewType;
@@ -38,6 +44,13 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
         return (V) this;
     }
 
+    /**
+     * Initializes Builder with base type and basic properties
+     *
+     * @param viewType base type
+     * @param properties basic properties
+     * @return builder
+     */
     public V view(Q viewType, Path<?>... properties) {
         List<Path<?>> propertiesList =
                 Arrays.stream(properties).collect(toList());
@@ -45,6 +58,13 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
         return this.view(viewType, propertiesList);
     }
 
+    /**
+     * Initializes Builder with base type and basic properties
+     *
+     * @param viewType base type
+     * @param properties basic properties
+     * @return builder
+     */
     public V view(Q viewType, List<Path<?>> properties) {
         List<String> propertyNames = properties.stream()
                 .map(this::resolvePropertyName).collect(toList());
@@ -59,6 +79,13 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
         return (V) this;
     }
 
+    /**
+     * Initializes Builder with base type and basic properties
+     *
+     * @param viewType base type
+     * @param properties basic properties
+     * @return builder
+     */
     public V view(Q viewType, Function<Q, List<Path<?>>> properties) {
         List<Path<?>> evaluatedProperties = properties.apply(viewType);
         List<String> propertyNames = evaluatedProperties.stream()
@@ -74,22 +101,39 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
         return (V) this;
     }
 
-    public V extendByViews(View... view) {
+    /**
+     * Applies predefined views
+     *
+     * @param views predefined views
+     * @return builder
+     */
+    public V extendByViews(View... views) {
 
         ViewBuilder localViewBuilder = viewBuilder();
-        Arrays.stream(view).forEach(localViewBuilder::addView);
+        Arrays.stream(views).forEach(localViewBuilder::addView);
 
         return (V) this;
     }
 
-    public V extendByViews(String... view) {
+    /**
+     * Applies predefined views
+     *
+     * @param views predefined views
+     * @return builder
+     */
+    public V extendByViews(String... views) {
 
         ViewBuilder localViewBuilder = viewBuilder();
-        Arrays.stream(view).forEach(localViewBuilder::addView);
+        Arrays.stream(views).forEach(localViewBuilder::addView);
 
         return (V) this;
     }
 
+    /**
+     * Adds system properties
+     *
+     * @return builder
+     */
     public V extendBySystem() {
 
         viewBuilder().addSystem();
@@ -97,6 +141,12 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
         return (V) this;
     }
 
+    /**
+     * Adds properties
+     *
+     * @param properties basic properties
+     * @return builder
+     */
     public V properties(Path<?>... properties) {
         List<String> propertyNames = Arrays.stream(properties)
                 .map(this::resolvePropertyName).collect(toList());
@@ -106,6 +156,12 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
         return (V) this;
     }
 
+    /**
+     * Adds properties
+     *
+     * @param properties basic properties
+     * @return builder
+     */
     public V properties(Function<Q, List<Path<?>>> properties) {
         List<Path<?>> evaluatedProperties = properties.apply(viewType);
         List<String> propertyNames = evaluatedProperties.stream()
@@ -116,6 +172,12 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
         return (V) this;
     }
 
+    /**
+     * Add property
+     *
+     * @param property property
+     * @return builder
+     */
     public V property(Path<?> property) {
         viewBuilder().add(resolvePropertyName(property));
 
@@ -124,6 +186,14 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
 
     // --- generic methods for paths like entity, bean and other variants
 
+    /**
+     * Adds property with view
+     *
+     * @param property property
+     * @param view view
+     * @param <SP> type of property
+     * @return builder
+     */
     public <SP extends Path<? extends Entity<?>>> V property(SP property, View view) {
 
         viewBuilder().add(resolvePropertyName(property), vb -> vb.addView(view));
@@ -133,6 +203,8 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
     }
 
     /**
+     * Adds property with view and fetch mode
+     *
      * CUBA.platform doesn't support such API. It will be enabled in the future
      */
     @Deprecated
@@ -142,6 +214,14 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
         throw new UnsupportedOperationException("CUBA.platform doesn't support such API");
     }
 
+    /**
+     * Adds property with view
+     *
+     * @param property property
+     * @param view view
+     * @param <SP> type of property
+     * @return builder
+     */
     public <SP extends Path<? extends Entity<?>>> V property(SP property, String view) {
 
         viewBuilder().add(resolvePropertyName(property), view);
@@ -149,7 +229,15 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
         return (V) this;
     }
 
-
+    /**
+     * Adds property with view and fetch mode
+     *
+     * @param property property
+     * @param view view
+     * @param fetchMode fetch mode
+     * @param <SP> type of property
+     * @return builder
+     */
     public <SP extends Path<? extends Entity<?>>>
     V property(SP property, String view, FetchMode fetchMode) {
 
@@ -158,6 +246,14 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
         return (V) this;
     }
 
+    /**
+     * Adds property with sub-properties
+     *
+     * @param property property
+     * @param properties sub-properties
+     * @param <SP> type of property
+     * @return builder
+     */
     public <SP extends Path<? extends Entity<?>>>
     V property(SP property, Function<SP, List<Path<?>>> properties) {
 
@@ -172,6 +268,8 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
     }
 
     /**
+     * Adds property with sub-properties and fetch mode
+     *
      * CUBA.platform doesn't support such API. It will be enabled in the future
      */
     @Deprecated
@@ -185,6 +283,15 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
 
     // --- collection methods
 
+    /**
+     * Adds collection property with view
+     *
+     * @param property property
+     * @param view view
+     * @param <E> entity type
+     * @param <SP> querydsl type of property
+     * @return builder
+     */
     public <E, SP extends SimpleExpression<E>>
     V property(CollectionPathBase<? extends Collection<E>, E, SP> property,
                View view) {
@@ -195,6 +302,8 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
     }
 
     /**
+     * Adds collection property with view
+     *
      * CUBA.platform doesn't support such API. It will be enabled in the future
      */
     @Deprecated
@@ -205,6 +314,15 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
         throw new UnsupportedOperationException("CUBA.platform doesn't support such API");
     }
 
+    /**
+     * Adds collection property with view
+     *
+     * @param property property
+     * @param view view
+     * @param <E> entity type
+     * @param <SP> querydsl type of property
+     * @return builder
+     */
     public <E, SP extends SimpleExpression<E>>
     V property(CollectionPathBase<? extends Collection<E>, E, SP> property,
                String view) {
@@ -214,6 +332,16 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
         return (V) this;
     }
 
+    /**
+     * Adds collection property with view and fetch mode
+     *
+     * @param property property
+     * @param view view
+     * @param fetchMode fetch mode
+     * @param <E> entity type
+     * @param <SP> querydsl type of property
+     * @return builder
+     */
     public <E, SP extends SimpleExpression<E>>
     V property(CollectionPathBase<? extends Collection<E>, E, SP> property,
                String view, FetchMode fetchMode) {
@@ -224,6 +352,15 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
     }
 
 
+    /**
+     * Adds collection property with sub-properties
+     *
+     * @param property property
+     * @param properties sub-properties
+     * @param <E> entity type
+     * @param <SP> querydsl type of property
+     * @return builder
+     */
     public <E, SP extends SimpleExpression<E>>
     V property(CollectionPathBase<? extends Collection<E>, E, SP> property,
                Function<SP, List<Path<?>>> properties) {
@@ -240,6 +377,8 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
     }
 
     /**
+     * Adds collection property with sub-properties and fetch mode
+     *
      * CUBA.platform doesn't support such API. It will be enabled in the future
      */
     @Deprecated
@@ -252,6 +391,12 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
     }
 
 
+    /**
+     * Allows configuring part of builder with native CUBA.platform API
+     *
+     * @param builder CUBA.platform view builder
+     * @return builder
+     */
     public V withViewBuilder(Consumer<ViewBuilder> builder) {
         builder.accept(viewBuilder());
         return (V) this;
@@ -259,6 +404,11 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
 
     // --- build
 
+    /**
+     * Builds CUBA.platform view
+     *
+     * @return CUBA.platform view
+     */
     public View build() {
         return viewBuilder().build();
     }
