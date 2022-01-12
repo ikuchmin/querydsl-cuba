@@ -32,8 +32,8 @@ apply(plugin: 'cuba')
 cuba {
     artifact {
         group = 'ru.udya.querydsl.cuba'
-        version = '2.0.0'
-        isSnapshot = false
+        version = '2.1.0'
+        isSnapshot = true
     }
     tomcat {
         dir = "$project.rootDir/deploy/tomcat"
