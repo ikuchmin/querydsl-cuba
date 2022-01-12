@@ -11,17 +11,15 @@ import com.querydsl.core.types.dsl.SimpleExpression;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
 
-// todo: add backward compatibility methods (works with basic strings)
 @SuppressWarnings("unchecked")
 public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V extends AbstractTypedViewBuilder<Q, V>> {
 
-    private Q viewType;
+    protected Q viewType;
 
     protected ViewBuilder viewBuilder;
 
@@ -138,7 +136,8 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
      * CUBA.platform doesn't support such API. It will be enabled in the future
      */
     @Deprecated
-    public <SP extends Path<? extends Entity<?>>> V property(SP property, View view, FetchMode fetchMode) {
+    public <SP extends Path<? extends Entity<?>>>
+    V property(SP property, View view, FetchMode fetchMode) {
 
         throw new UnsupportedOperationException("CUBA.platform doesn't support such API");
     }
@@ -151,15 +150,16 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
     }
 
 
-    public <SP extends Path<? extends Entity<?>>> V property(SP property, String view, FetchMode fetchMode) {
+    public <SP extends Path<? extends Entity<?>>>
+    V property(SP property, String view, FetchMode fetchMode) {
 
         viewBuilder().add(resolvePropertyName(property), view, fetchMode);
 
         return (V) this;
     }
 
-    public <SP extends Path<? extends Entity<?>>> V property(
-            SP property, Function<SP, List<Path<?>>> properties) {
+    public <SP extends Path<? extends Entity<?>>>
+    V property(SP property, Function<SP, List<Path<?>>> properties) {
 
         List<Path<?>> evaluatedProperties = properties.apply(property);
         List<String> propertyNames = evaluatedProperties.stream()
@@ -175,39 +175,19 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
      * CUBA.platform doesn't support such API. It will be enabled in the future
      */
     @Deprecated
-    public <SP extends Path<? extends Entity<?>>> V property(
-            SP property, Function<SP, List<Path<?>>> properties,
-            FetchMode fetchMode) {
+    public <SP extends Path<? extends Entity<?>>>
+    V property(SP property, Function<SP, List<Path<?>>> properties,
+               FetchMode fetchMode) {
 
         throw new UnsupportedOperationException("CUBA.platform doesn't support such API");
     }
 
-
-    public <SP extends Path<? extends Entity<?>>> V property(
-            SP property, BiConsumer<SP, TypedViewBuilder<SP>> builder) {
-
-        viewBuilder().add(resolvePropertyName(property),
-                vb -> builder.accept(property, new TypedViewBuilder<>(property, vb)));
-
-        return (V) this;
-    }
-
-    /**
-     * CUBA.platform doesn't support such API. It will be enabled in the future
-     */
-    @Deprecated
-    public <SP extends Path<? extends Entity<?>>> V property(
-            SP property, BiConsumer<SP, TypedViewBuilder<SP>> builder,
-            FetchMode fetchMode) {
-
-        throw new UnsupportedOperationException("CUBA.platform doesn't support such API");
-    }
 
     // --- collection methods
 
-    public <E, SP extends SimpleExpression<E>> V property(
-            CollectionPathBase<? extends Collection<E>, E, SP> property,
-            View view) {
+    public <E, SP extends SimpleExpression<E>>
+    V property(CollectionPathBase<? extends Collection<E>, E, SP> property,
+               View view) {
 
         viewBuilder().add(resolvePropertyName(property), vb -> vb.addView(view));
 
@@ -218,25 +198,25 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
      * CUBA.platform doesn't support such API. It will be enabled in the future
      */
     @Deprecated
-    public <E, SP extends SimpleExpression<E>> V property(
-            CollectionPathBase<? extends Collection<E>, E, SP> property,
-            View view, FetchMode fetchMode) {
+    public <E, SP extends SimpleExpression<E>>
+    V property(CollectionPathBase<? extends Collection<E>, E, SP> property,
+               View view, FetchMode fetchMode) {
 
         throw new UnsupportedOperationException("CUBA.platform doesn't support such API");
     }
 
-    public <E, SP extends SimpleExpression<E>> V property(
-            CollectionPathBase<? extends Collection<E>, E, SP> property,
-            String view) {
+    public <E, SP extends SimpleExpression<E>>
+    V property(CollectionPathBase<? extends Collection<E>, E, SP> property,
+               String view) {
 
         viewBuilder().add(resolvePropertyName(property), view);
 
         return (V) this;
     }
 
-    public <E, SP extends SimpleExpression<E>> V property(
-            CollectionPathBase<? extends Collection<E>, E, SP> property,
-            String view, FetchMode fetchMode) {
+    public <E, SP extends SimpleExpression<E>>
+    V property(CollectionPathBase<? extends Collection<E>, E, SP> property,
+               String view, FetchMode fetchMode) {
 
         viewBuilder().add(resolvePropertyName(property), view, fetchMode);
 
@@ -244,8 +224,9 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
     }
 
 
-    public <E, SP extends SimpleExpression<E>> V property(CollectionPathBase<? extends Collection<E>, E, SP> property,
-                                                          Function<SP, List<Path<?>>> properties) {
+    public <E, SP extends SimpleExpression<E>>
+    V property(CollectionPathBase<? extends Collection<E>, E, SP> property,
+               Function<SP, List<Path<?>>> properties) {
 
 
         List<Path<?>> evaluatedProperties = properties.apply(property.any());
@@ -262,34 +243,14 @@ public class AbstractTypedViewBuilder<Q extends Path<? extends Entity<?>>, V ext
      * CUBA.platform doesn't support such API. It will be enabled in the future
      */
     @Deprecated
-    public <E, SP extends SimpleExpression<E>> V property(CollectionPathBase<? extends Collection<E>, E, SP> property,
-                                                          Function<SP, List<Path<?>>> properties,
-                                                          FetchMode fetchMode) {
+    public <E, SP extends SimpleExpression<E>>
+    V property(CollectionPathBase<? extends Collection<E>, E, SP> property,
+               Function<SP, List<Path<?>>> properties,
+               FetchMode fetchMode) {
 
         throw new UnsupportedOperationException("CUBA.platform doesn't support such API");
     }
 
-
-    public <E extends Entity<?>, SP extends SimpleExpression<E> & Path<E>>
-    V property(CollectionPathBase<? extends Collection<E>, E, SP> property,
-               BiConsumer<SP, TypedViewBuilder<SP>> builder) {
-
-        viewBuilder().add(resolvePropertyName(property),
-                vb -> builder.accept(property.any(), new TypedViewBuilder<>(property.any(), vb)));
-
-        return (V) this;
-    }
-
-    /**
-     * CUBA.platform doesn't support such API. It will be enabled in the future
-     */
-    @Deprecated
-    public <E extends Entity<?>, SP extends SimpleExpression<E> & Path<E>>
-    V property(CollectionPathBase<? extends Collection<E>, E, SP> property,
-               BiConsumer<SP, TypedViewBuilder<SP>> builder, FetchMode fetchMode) {
-
-        throw new UnsupportedOperationException("CUBA.platform doesn't support such API");
-    }
 
     public V withViewBuilder(Consumer<ViewBuilder> builder) {
         builder.accept(viewBuilder());
