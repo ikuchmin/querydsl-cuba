@@ -2,20 +2,24 @@
 
 ### Overview
 
-The add-on provides [QueryDSL](http://www.querydsl.com/) integration for CUBA applications. [QueryDSL](http://www.querydsl.com/) enables the construction of unified type-safe database queries for Java. Instead of writing queries, you can use a fluent API.
+The add-on provides:
+- [QueryDSL](http://www.querydsl.com/) integration for CUBA applications. [QueryDSL](http://www.querydsl.com/) enables the construction of unified type-safe database queries for Java. Instead of writing queries, you can use a fluent API.
+- View Builder based on QueryDSL classes
 
 See the [demo project](https://github.com/ikuchmin/querydsl-shop), using this add-on.
 
 #### Suggestions in IDE
 
-QueryDSL provides suggestions in your IDE while writing queries in your CUBA application.
+QueryDSL provides suggestions in your IDE:
 
-![Alt Text](doc/query_dsl_support.gif)
+- while writing queries in your CUBA application
+  ![Alt Text](doc/query_dsl_support.gif)
+
+- while writing view in you CUBA application
 
 #### Compilation
 
-QueryDSL guarantees that the compiler will check that your database queries are type-safe. It also helps you adapt better to refactoring changes.
-
+QueryDSL guarantees that the compiler will check that your database queries and CUBA view are type-safe. It also helps you adapt better to refactoring changes.
 
 
 ### Installation
@@ -97,6 +101,7 @@ The [Demo project](https://github.com/ikuchmin/querydsl-shop) demonstrates the u
 
 Here is an example from the demo project:
 
+Query example
 ```java
 CubaQueryFactory queryFactory = new CubaQueryFactory(txDm, metadata);
 
@@ -108,4 +113,19 @@ return queryFactory.select(order)
         .where(orderStorageItem.storage.id.eq(storageId.getValue()))
         .orderBy(order.updateTs.desc())
         .fetch(view);
+```
+
+View example
+```java
+@Inject
+protected TypedViewFactory typedViewFactory;
+
+QStorageItem storageItem = QStorageItem.storageItem;
+
+View storageWithItems = typedViewFactory.view(storageItem)
+        .property(storageItem.product, (qp, qpb) -> qpb.extendByViews(View.LOCAL))
+        .property(storageItem.storage, (qs, qsb) -> qsb.extendByViews(View.LOCAL))
+        .extendByViews(storageItemView)
+        .build();
+
 ```
