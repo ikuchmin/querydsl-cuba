@@ -5,12 +5,15 @@ import com.haulmont.cuba.core.TransactionalDataManager;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.ViewBuilder;
 import com.haulmont.cuba.core.global.ViewProperty;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import ru.udya.querydsl.cuba.QuerydslcubaTestContainer;
+import ru.udya.querydsl.cuba.core.domain.Cat;
+import ru.udya.querydsl.cuba.core.domain.Employee;
 import ru.udya.querydsl.cuba.core.domain.QAnimal;
 import ru.udya.querydsl.cuba.core.domain.QCat;
 import ru.udya.querydsl.cuba.core.domain.QCompany;
@@ -230,19 +233,69 @@ public class TypedViewBuilderTest {
         assertEquals(expectedProperties, actualProperties);
     }
 
+    @Test
+    public void initialize_view_with_loosing_type_property() {
+        QCat qCat = QCat.cat;
+        View catView = new TypedViewBuilder<>()
+                .view(qCat).withViewBuilder(vb -> vb.addAll("birthdate", "alive")).build();
 
-//    @Override
-//    protected JPQLQuery<?> query() {
-//        return new CubaQuery<>(txDm, metadata);
-//    }
-//
-//    @Override
-//    protected JPQLQuery<?> testQuery() {
-//        return new CubaQuery<>(txDm, metadata, new DefaultQueryMetadata());
-//    }
+        Set<String> actualProperties = catView.getProperties().stream()
+                .map(ViewProperty::getName).collect(Collectors.toSet());
 
-//    @Override
-//    protected void save(Object entity) {
-//        txDm.save((Entity) entity);
-//    }
+        HashSet<String> expectedProperties = new HashSet<>(asList(
+                qCat.birthdate.getMetadata().getName(),
+                qCat.alive.getMetadata().getName()));
+
+        assertEquals(expectedProperties, actualProperties);
+    }
+
+    @Test
+    public void initialize_view_with_predefined_view() {
+        View predefinedView = ViewBuilder.of(Cat.class)
+                .addAll("birthdate", "alive").build();
+
+        View predefinedViewSecond = ViewBuilder.of(Cat.class)
+                .addAll("breed").build();
+
+        QCat qCat = QCat.cat;
+        View catView = new TypedViewBuilder<>()
+                .view(qCat).extendByViews(predefinedView, predefinedViewSecond).build();
+
+        Set<String> actualProperties = catView.getProperties().stream()
+                .map(ViewProperty::getName).collect(Collectors.toSet());
+
+        HashSet<String> expectedProperties = new HashSet<>(asList(
+                qCat.birthdate.getMetadata().getName(),
+                qCat.alive.getMetadata().getName(),
+                qCat.breed.getMetadata().getName()));
+
+        assertEquals(expectedProperties, actualProperties);
+    }
+
+    @Test
+    public void add_complex_property_with_predefined_view() {
+        View predefinedView = ViewBuilder.of(Employee.class)
+                .addAll("id", "firstName").build();
+
+        QCompany qCompany = QCompany.company;
+
+        View companyView = new TypedViewBuilder<>()
+                .view(qCompany, qCompany.name, qCompany.officialName)
+                .property(qCompany.ceo, predefinedView).build();
+
+        Set<String> actualProperties = companyView.getProperties().stream()
+                .flatMap(p -> p.getView() == null ? Stream.of(p.getName())
+                        : p.getView().getProperties().stream()
+                        .map(ip -> p.getName() + "." + ip.getName()))
+                .collect(Collectors.toSet());
+
+        String ceoName = qCompany.ceo.getMetadata().getName();
+        HashSet<String> expectedProperties = new HashSet<>(asList(
+                qCompany.name.getMetadata().getName(),
+                qCompany.officialName.getMetadata().getName(),
+                ceoName + "." + qCompany.ceo.id.getMetadata().getName(),
+                ceoName + "." + qCompany.ceo.firstName.getMetadata().getName()));
+
+        assertEquals(expectedProperties, actualProperties);
+    }
 }
