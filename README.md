@@ -119,13 +119,10 @@ View example
 ```java
 @Inject
 protected TypedViewFactory typedViewFactory;
+var qStorage = QStorage.storage;
 
-QStorageItem storageItem = QStorageItem.storageItem;
-
-View storageWithItems = typedViewFactory.view(storageItem)
-        .property(storageItem.product, (qp, qpb) -> qpb.extendByViews(View.LOCAL))
-        .property(storageItem.storage, (qs, qsb) -> qsb.extendByViews(View.LOCAL))
-        .extendByViews(storageItemView)
-        .build();
+View storageView = typedViewFactory.view(qStorage, qStorage.name)
+       .property(qStorage.storageItems, (qsi, qsib) -> qsib.properties(qsi.count)
+               .property(qsi.product, (qp, qpb) -> qpb.properties(qp.name))).build();
 
 ```
