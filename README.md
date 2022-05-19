@@ -103,7 +103,9 @@ Here is an example from the demo project:
 
 Query example
 ```java
-CubaQueryFactory queryFactory = new CubaQueryFactory(txDm, metadata);
+
+@Inject
+protected CubaQueryFactory queryFactory;
 
 QOrder order = new QOrder("o");
 QOrderStorageItem orderStorageItem = QOrderStorageItem.orderStorageItem;
